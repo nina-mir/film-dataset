@@ -4,21 +4,34 @@
 A chatbot that allows interaction with a publicly available dataset of film/TV projects filmed in San Francisco city over the past 100 years. 
 The augmented dataset is publicly available on SFgov.data as a CSV file. 
 
-Keywords: RAG, films, history, San Francisco
+A few examples of this chatbot's interactions from the user perspective is presented below:  
+<p style="font-size:22px">👵🏽: "What are some 80s films shot in San Francsico?"</p>
+<p style="font-size:50px">👵:"What are some films shot in the Mission neighborhood in San Francsico?" </p>
+<p style="font-size:50px">👩🏾:"Any Charlie Chaplin films shot in San Francisco?" </p>
+
+
+
+**Keywords**: _RAG, films, history, San Francisco_
 
 ### Data
 
-The dataset for this project can be previewed [here](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am/data_preview).
-The current dataset was last updated by the SF's Film Commission on March 13, 2024. More info about the data can be found on [http://www.filmsf.org/](	http://www.filmsf.org/). 
+#### original data
+
+The dataset for this project can be previewed [on SF government website.](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am/data_preview).
+The dataset downloaded for this project was last updated by the SF's Film Commission on March 13, 2024. More info about the data can be found on [http://www.filmsf.org/](	http://www.filmsf.org/). 
 The raw data contains 2084 row with 14 columns:
 
-**Title**	| **Release Year** | **Locations**	|**Fun Facts** | **Production Company** | **Distributor**	| **Director** | **Writer** | **Actor 1** | **Actor 2** | **Actor 3** | 
+` Title	| Release Year | Locations |Fun Facts | Production Company | Distributor | Director | Writer | Actor 1 | Actor 2 | Actor 3 | 
+SF Find Neighborhoods | Analysis Neighborhoods | Current Supervisor Districts `
 
-**SF Find Neighborhoods** | **Analysis Neighborhoods** | **Current Supervisor Districts**
+#### cleaned data used in this project
 
-For this work, an abridged dataset containing the following column data is created: 
+For this work, an abridged dataset containing the following 5 columns is created: 
 
-**Title**	| **Release Year** | **Locations**	| **Fun Facts** | **Director** | **Writer** | **Actor 1** | **Actor 2** | **Actor 3** 
+```Title | Release Year | Locations | Director | Actor 1```
+
+More info including the python script used to clean/abridge the dataset can be found in this repo's [```/data```](/data/readme.md) directory.
+
 > [!NOTE]  
 > Each row contains only one location data. Therefore, each film could have more than one location data associated with it. 
 
