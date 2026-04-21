@@ -1,0 +1,672 @@
+
+############################################################
+  TEST 1/10: T1: Retrieve by Director (string ==)
+  Query: films directed by alfred hitchcock
+  Expected: retrieve, film granularity, Director predicate
+############################################################
+
+============================================================
+Query: films directed by alfred hitchcock
+============================================================
+
+[Step 1] Normalized: films directed by alfred hitchcock
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by alfred hitchcock",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by alfred hitchcock",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": "alfred hitchcock",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 380 chars
+  Prompt size: 54922 chars
+  ✓ Code generated: 3702 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf`. It first creates a copy of the input GeoDataFrame to ensure no mu...
+
+[Execution] ✓ Success
+  Summary: Found 4 films directed by Alfred Hitchcock.
+  Data: {"type": "FeatureCollection", "features": [{"id": "33", "type": "Feature", "properties": {"id": 34, "Title": "Vertigo", "Year": 1958, "Locations": "1007 Gough St", "Fun_Facts": "Tennis courts now sit 
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 2/10: T2: Retrieve by Location (contains)
+  Query: films shot on market street
+  Expected: retrieve, film granularity, Locations contains
+############################################################
+
+============================================================
+Query: films shot on market street
+============================================================
+
+[Step 1] Normalized: films shot on market st
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films shot on market st",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films shot on market st",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "market st",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 369 chars
+  Prompt size: 54911 chars
+  ✓ Code generated: 3147 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf`. It first creates a copy of the input GeoDataFrame to ensure no mu...
+
+[Execution] ✓ Success
+  Summary: Found 29 films shot on Market St.
+  Data: [{'id': 49, 'Title': 'The Net', 'Year': 1995, 'Locations': 'Montgomery & Market St', 'Fun_Facts': '', 'Director': 'Irwin Winkler', 'Writer': 'John Brancato', 'Actor_1': 'Sandra Bullock', 'Actor_2': 'J
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 3/10: T3: Retrieve by Actor (virtual field)
+  Query: films with sean penn
+  Expected: retrieve, film granularity, Actor OR expansion
+############################################################
+
+============================================================
+Query: films with sean penn
+============================================================
+
+[Step 1] Normalized: films with sean penn
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with sean penn",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  [filter_extractor] Error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}, null predicates fallback
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with sean penn",
+      "dependsOn": [],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 247 chars
+  Prompt size: 54789 chars
+  ✓ Code generated: 3309 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf` as input. It creates a copy of the input GeoDataFrame to ensure no...
+
+[Execution] ✓ Success
+  Summary: Found 337 unique films.
+  Data: [{'id': 1, 'Title': 'Experiment in Terror', 'Year': 1962, 'Locations': "The Sea Captain's Chest (Fisherman's Wharf)", 'Fun_Facts': '', 'Director': 'Blake Edwards', 'Writer': 'The Gordons', 'Actor_1': 
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 4/10: T4: Count films in a decade
+  Query: how many films were shot in the 80s
+  Expected: count, scalar granularity, Year between 1980-1989
+############################################################
+
+============================================================
+Query: how many films were shot in the 80s
+============================================================
+
+[Step 1] Normalized: how many films were shot in the 80s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "count",
+      "source": "how many films were shot in the 80s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "count",
+      "source": "how many films were shot in the 80s",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "between",
+        "value": [
+          1980,
+          1989
+        ],
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=scalar, offer_map=False
+  Top-level offer_map: False
+
+[Step 6] Generating code...
+  IR size: 407 chars
+  Prompt size: 54949 chars
+  ✓ Code generated: 3530 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf`. It first creates a copy of the input GeoDataFrame to avoid mutati...
+
+[Execution] ✓ Success
+  Summary: Found 39 films shot in the 1980s.
+  Data: 39
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 5/10: T5: Rank directors by film count
+  Query: top 5 directors with the most films
+  Expected: rank, film granularity, no predicate filter (null or all rows)
+############################################################
+
+============================================================
+Query: top 5 directors with the most films
+============================================================
+
+[Step 1] Normalized: top 5 directors with the most films
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "top 5 directors with the most films",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "top 5 directors with the most films",
+      "dependsOn": [],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 262 chars
+  Prompt size: 54804 chars
+  ✓ Code generated: 3824 chars
+  Explanation: ...
+
+[Execution] ✗ Internal error: AttributeError: 'dict' object has no attribute 'to_dict'
+
+============================================================
+Pipeline ✗ FAILED
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 6/10: T6: Retrieve by Year (exact)
+  Query: films from 1985
+  Expected: retrieve, film granularity, Year == 1985
+############################################################
+
+============================================================
+Query: films from 1985
+============================================================
+
+[Step 1] Normalized: films from 1985
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films from 1985",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films from 1985",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "==",
+        "value": 1985,
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 343 chars
+  Prompt size: 54885 chars
+  ✓ Code generated: 3335 chars
+  Explanation: ...
+
+[Execution] ✓ Success
+  Summary: Found 4 films from 1985.
+  Data: [{'id': 4, 'Title': 'A View to a Kill', 'Year': 1985, 'Locations': "Taylor and Jefferson St (Fisherman's Wharf)", 'Fun_Facts': '', 'Director': 'John Glen', 'Writer': 'Richard Maibaum', 'Actor_1': 'Rog
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 7/10: T7: Retrieve by Director + Year range (AND)
+  Query: films by alfred hitchcock from the 1950s
+  Expected: retrieve, film granularity, Director AND Year between
+############################################################
+
+============================================================
+Query: films by alfred hitchcock from the 1950s
+============================================================
+
+[Step 1] Normalized: films by alfred hitchcock from the 1950s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by alfred hitchcock from the 1950s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by alfred hitchcock from the 1950s",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "alfred hitchcock",
+            "type": "attribute"
+          },
+          {
+            "field": "Year",
+            "op": "between",
+            "value": [
+              1950,
+              1959
+            ],
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 673 chars
+  Prompt size: 55215 chars
+  ✓ Code generated: 4019 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame. It first creates a copy of the input DataFrame to avoid mutation. For t...
+
+[Execution] ✓ Success
+  Summary: Found 1 films by Alfred Hitchcock from the 1950s.
+  Data: [{'Title': 'Vertigo', 'Year': 1958, 'Director': 'Alfred Hitchcock', 'Locations': '1007 Gough St'}]
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 8/10: T8: Spatial retrieve (within_distance)
+  Query: films within 1 mile of coit tower
+  Expected: retrieve, location granularity, geometry within_distance
+############################################################
+
+============================================================
+Query: films within 1 mile of coit tower
+============================================================
+
+[Step 1] Normalized: films within 1 mile of coit tower
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films within 1 mile of coit tower",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films within 1 mile of coit tower",
+      "dependsOn": [],
+      "predicate": {
+        "field": "geometry",
+        "op": "within_distance",
+        "value": {
+          "reference_place": "coit tower",
+          "distance": 1,
+          "unit": "mile",
+          "latitude": 37.8024,
+          "longitude": -122.4058
+        },
+        "type": "spatial"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 541 chars
+  Prompt size: 55083 chars
+  ✓ Code generated: 4859 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf`. It first creates a copy of the input GeoDataFrame to avoid modify...
+
+[Execution] ✓ Success
+  Summary: Found 189 films filmed within 1 mile of Coit Tower.
+  Data: [{'id': 1, 'Title': 'Experiment in Terror', 'Year': 1962, 'Locations': "The Sea Captain's Chest (Fisherman's Wharf)", 'Fun_Facts': '', 'Director': 'Blake Edwards', 'Writer': 'The Gordons', 'Actor_1': 
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 9/10: T9: Retrieve locations for a film
+  Query: show filming locations for vertigo
+  Expected: retrieve, location granularity, Title contains vertigo
+############################################################
+
+============================================================
+Query: show filming locations for vertigo
+============================================================
+
+[Step 1] Normalized: show filming locations for vertigo
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for vertigo",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for vertigo",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Title",
+        "op": "==",
+        "value": "vertigo",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 372 chars
+  Prompt size: 54914 chars
+  ✓ Code generated: 3273 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf` as input. It first creates a copy of the GeoDataFrame to ensure no...
+
+[Execution] ✓ Success
+  Summary: Found 16 filming locations for 'Vertigo'.
+  Data: DataFrame with 16 rows
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 10/10: T10: Rank actors by film count in decade
+  Query: actors who appeared in the most films in the 90s
+  Expected: rank, film granularity, Year between 1990-1999
+############################################################
+
+============================================================
+Query: actors who appeared in the most films in the 90s
+============================================================
+
+[Step 1] Normalized: actors who appeared in the most films in the 90s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "actors who appeared in the most films in the 90s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "actors who appeared in the most films in the 90s",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "between",
+        "value": [
+          1990,
+          1999
+        ],
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 419 chars
+  Prompt size: 54961 chars
+  ✓ Code generated: 4745 chars
+  Explanation: The code defines a function `process_sf_film_query` that takes a GeoDataFrame `gdf`. It first creates a copy of the input GeoDataFrame to avoid modify...
+
+[Execution] ✓ Success
+  Summary: Top 10 actors who appeared in the most films in the 1990s:
+- Robin Williams: 8 films
+- Eddie Murphy: 3 films
+- Meg Ryan: 3 films
+- Andy Garcia: 2 films
+- Michael Douglas: 2 films
+- Lauren Holly: 2 films
+- Julia Roberts: 2 films
+- Nicolas Cage: 2 films
+- Richard Gere: 2 films
+- Sharon Stone: 2 films
+  Data keys: ['Robin Williams', 'Eddie Murphy', 'Meg Ryan', 'Andy Garcia', 'Michael Douglas', 'Lauren Holly', 'Julia Roberts', 'Nicolas Cage', 'Richard Gere', 'Sharon Stone']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+
+============================================================
+TEST SUITE SUMMARY
+============================================================
+  Passed: 9/10
+  Failed: 1/10
+
+  ✓ T1: Retrieve by Director (string ==)
+  ✓ T2: Retrieve by Location (contains)
+  ✓ T3: Retrieve by Actor (virtual field)
+  ✓ T4: Count films in a decade
+  ✗ T5: Rank directors by film count
+    → Execution error: Error processing query: 'dict' object has no attribute 'to_dict'
+  ✓ T6: Retrieve by Year (exact)
+  ✓ T7: Retrieve by Director + Year range (AND)
+  ✓ T8: Spatial retrieve (within_distance)
+  ✓ T9: Retrieve locations for a film
+  ✓ T10: Rank actors by film count in decade

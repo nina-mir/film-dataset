@@ -1,0 +1,1 @@
+{"tasks": [{"id": "t1", "kind": "retrieve", "source": "show filming locations for vertigo", "dependsOn": [], "predicate": {"field": "Title", "op": "==", "value": "vertigo", "type": "attribute"}}]}

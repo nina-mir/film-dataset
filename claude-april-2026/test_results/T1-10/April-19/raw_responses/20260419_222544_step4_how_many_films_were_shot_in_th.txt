@@ -1,0 +1,1 @@
+{"tasks": [{"id": "t1", "kind": "count", "source": "how many films were shot in the 80s", "dependsOn": [], "predicate": {"field": "Year", "op": "between", "value": [1980, 1989], "type": "attribute"}}]}

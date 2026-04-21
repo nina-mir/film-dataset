@@ -1,0 +1,748 @@
+
+############################################################
+  TEST 1/10: T11: Disjunction across same field
+  Query: films by zachary shedd or nicholas meyer
+  Expected: retrieve, film granularity, Director OR Director
+############################################################
+
+============================================================
+Query: films by zachary shedd or nicholas meyer
+============================================================
+
+[Step 1] Normalized: films by zachary shedd or nicholas meyer
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by zachary shedd or nicholas meyer",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_223848_step4_films_by_zachary_shedd_or_nich.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by zachary shedd or nicholas meyer",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "OR",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "zachary shedd",
+            "type": "attribute"
+          },
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "nicholas meyer",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 630 chars
+  Prompt size: 56371 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_223906_step6_films_by_zachary_shedd_or_nich.json
+  ✓ Code generated: 2069 chars
+  Explanation: The function filters the GeoDataFrame for films where the 'Director' column matches either 'zachary shedd' or 'nicholas meyer'. It uses a fully guarde...
+
+[Execution] ✓ Success
+  Summary: Found 4 films directed by Zachary Shedd or Nicholas Meyer.
+  Data: [{'id': 48, 'Title': 'Time After Time', 'Year': 1979, 'Locations': 'Merchant Exchange (465 California St at Leidesdorff)', 'Fun_Facts': '', 'Director': 'Nicholas Meyer', 'Writer': 'Karl Alexander', 'A
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 2/10: T12: Exact title match
+  Query: the film called time after time
+  Expected: retrieve, film granularity, Title exact-match semantics
+############################################################
+
+============================================================
+Query: the film called time after time
+============================================================
+
+[Step 1] Normalized: the film called time after time
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "the film called time after time",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_223919_step4_the_film_called_time_after_tim.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "the film called time after time",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Title",
+        "op": "==",
+        "value": "time after time",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 373 chars
+  Prompt size: 56114 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_223937_step6_the_film_called_time_after_tim.json
+  ✓ Code generated: 1920 chars
+  Explanation: The code processes the query by creating a boolean mask on the 'Title' column using a guarded case-insensitive search. It then filters the GeoDataFram...
+
+[Execution] ✓ Success
+  Summary: Found 1 film(s) matching 'time after time'.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 3/10: T13: Title substring retrieval
+  Query: films with boys in the title
+  Expected: retrieve, film granularity, Title contains 'boys'
+############################################################
+
+============================================================
+Query: films with boys in the title
+============================================================
+
+[Step 1] Normalized: films with boys in the title
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with boys in the title",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_223948_step4_films_with_boys_in_the_title.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with boys in the title",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Title",
+        "op": "contains",
+        "value": "boys",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 365 chars
+  Prompt size: 56106 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224007_step6_films_with_boys_in_the_title.json
+  ✓ Code generated: 1820 chars
+  Explanation: The code defines a function that filters the GeoDataFrame for rows where the 'Title' column contains the substring 'boys' (case-insensitive). It appli...
+
+[Execution] ✓ Success
+  Summary: Found 1 films with 'boys' in the title.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 4/10: T14: Multi-value director cell
+  Query: films directed by michel brezis
+  Expected: retrieve, film granularity, Director match must succeed on multi-director field
+############################################################
+
+============================================================
+Query: films directed by michel brezis
+============================================================
+
+[Step 1] Normalized: films directed by michel brezis
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by michel brezis",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224018_step4_films_directed_by_michel_brezi.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by michel brezis",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": "michel brezis",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 374 chars
+  Prompt size: 56115 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224037_step6_films_directed_by_michel_brezi.json
+  ✓ Code generated: 1874 chars
+  Explanation: The code defines a function that filters the GeoDataFrame for films where the 'Director' column matches 'michel brezis'. It uses a guarded string matc...
+
+[Execution] ✓ Success
+  Summary: Found 1 films directed by michel brezis.
+  Data: [{'id': 42, 'Title': 'Etruscan Smile', 'Year': 2017, 'Locations': 'Legion of Honor, 100 34th Ave', 'Fun_Facts': 'California Palace of the Legion of Honor was completed in 1924, and on Armistice Day of
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 5/10: T15: Location abbreviation variance
+  Query: films on larkin street
+  Expected: retrieve, film granularity, Locations contains normalized larkin st variants
+############################################################
+
+============================================================
+Query: films on larkin street
+============================================================
+
+[Step 1] Normalized: films on larkin st
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films on larkin st",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224049_step4_films_on_larkin_street.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films on larkin st",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "larkin st",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 364 chars
+  Prompt size: 56105 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224108_step6_films_on_larkin_street.json
+  ✓ Code generated: 2252 chars
+  Explanation: The code processes the query by filtering the GeoDataFrame for rows where the 'Locations' column contains 'larkin st'. It then deduplicates the result...
+
+[Execution] ✓ Success
+  Summary: Found 11 films filmed on Larkin St.
+  Data: [{'id': 104, 'Title': 'Chef Dynasty: House of Fang', 'Year': 2022, 'Locations': 'Asian Art Museum (200 Larkin St, Civic Center)', 'Fun_Facts': '', 'Director': '', 'Writer': '', 'Actor_1': 'Lillian Pha
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 6/10: T16: Null / missing-field predicate
+  Query: films with no listed director
+  Expected: retrieve, film granularity, Director is null or empty
+############################################################
+
+============================================================
+Query: films with no listed director
+============================================================
+
+[Step 1] Normalized: films with no listed director
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with no listed director",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224119_step4_films_with_no_listed_director.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with no listed director",
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": null,
+        "type": "attribute"
+      },
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 361 chars
+  Prompt size: 56102 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224138_step6_films_with_no_listed_director.json
+  ✓ Code generated: 1899 chars
+  Explanation: The code filters the GeoDataFrame for rows where the 'Director' column is null, empty, or contains string representations of null values (like 'none',...
+
+[Execution] ✓ Success
+  Summary: Found 1 films with no listed director.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 7/10: T17: Disjunction across different fields
+  Query: films either directed by nicholas meyer or shot at coit tower
+  Expected: retrieve, film granularity, OR tree across Director and Locations
+############################################################
+
+============================================================
+Query: films either directed by nicholas meyer or shot at coit tower
+============================================================
+
+[Step 1] Normalized: films either directed by nicholas meyer or filmed at coit tower
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films either directed by nicholas meyer or filmed at coit tower",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224150_step4_films_either_directed_by_nicho.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films either directed by nicholas meyer or filmed at coit tower",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "OR",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "nicholas meyer",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "coit tower",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 661 chars
+  Prompt size: 56402 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224211_step6_films_either_directed_by_nicho.json
+  ✓ Code generated: 2289 chars
+  Explanation: The function processes the query by creating two boolean masks: one for the Director field using a fully guarded string match, and one for the Locatio...
+
+[Execution] ✓ Success
+  Summary: Found 40 filming locations for films directed by nicholas meyer or filmed at coit tower.
+  Data: [{'id': 11, 'Title': 'The Rock', 'Year': 1996, 'Locations': 'Coit Tower', 'Fun_Facts': 'The Tower was funded by a gift bequeathed by Lillie Hitchcock Coit, a socialite who reportedly liked to chase fi
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 8/10: T18: Retrieve then count dependency
+  Query: films on larkin street and how many are there
+  Expected: retrieve plus count, dependency chain, t2 dependsOn t1, count distinct films from t1 matched_rows
+############################################################
+
+============================================================
+Query: films on larkin street and how many are there
+============================================================
+
+[Step 1] Normalized: films on larkin st and how many are there
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224215_step3_films_on_larkin_st_and_how_many_are_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films on larkin st",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many are there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224224_step4_films_on_larkin_street_and_how.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films on larkin st",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "larkin st",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many are there",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  t2: granularity=scalar, offer_map=False
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 589 chars
+  Prompt size: 56330 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224243_step6_films_on_larkin_street_and_how.json
+  ✓ Code generated: 2078 chars
+  Explanation: The code executes two tasks: first, it retrieves all filming location rows containing 'larkin st' in the 'Locations' column. Second, it uses the match...
+
+[Execution] ✓ Success
+  Summary: Found 11 films on Larkin St.
+  Data keys: ['count', 'count_basis']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 9/10: T19: Retrieve then location-count dependency
+  Query: show filming locations for time after time and how many locations are there
+  Expected: retrieve plus count, dependency chain, location granularity retrieve then count matched rows
+############################################################
+
+============================================================
+Query: show filming locations for time after time and how many locations are there
+============================================================
+
+[Step 1] Normalized: show filming locations for time after time and how many locations are there
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224246_step3_show_filming_locations_for_time_after_time_and_how_many_locations_are_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for time after time",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many locations are there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224255_step4_show_filming_locations_for_tim.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for time after time",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Title",
+        "op": "==",
+        "value": "time after time",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many locations are there",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=scalar, offer_map=False
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 618 chars
+  Prompt size: 56359 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224314_step6_show_filming_locations_for_tim.json
+  ✓ Code generated: 2312 chars
+  Explanation: The code executes two tasks: first, it filters the GeoDataFrame for rows where the 'Title' matches 'time after time' using a guarded string match. Sec...
+
+[Execution] ✓ Success
+  Summary: Found 24 filming locations for 'time after time'.
+  Data keys: ['locations', 'location_count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 10/10: T20: Cross-field AND with mixed predicates
+  Query: films by nicholas meyer at the hyatt regency hotel
+  Expected: retrieve, film granularity, Director AND Locations contains
+############################################################
+
+============================================================
+Query: films by nicholas meyer at the hyatt regency hotel
+============================================================
+
+[Step 1] Normalized: films by nicholas meyer at the hyatt regency hotel
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by nicholas meyer at the hyatt regency hotel",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224325_step4_films_by_nicholas_meyer_at_the.json
+  [filter_extractor] Normalizing bare-array response
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by nicholas meyer at the hyatt regency hotel",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "nicholas meyer",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "hyatt regency hotel",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 654 chars
+  Prompt size: 56395 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260420_224346_step6_films_by_nicholas_meyer_at_the.json
+  ✓ Code generated: 2306 chars
+  Explanation: The code processes the query by creating a boolean mask for the Director field using a fully guarded case-insensitive search, and a second mask for th...
+
+[Execution] ✓ Success
+  Summary: Found 1 film(s) directed by nicholas meyer filmed at the hyatt regency hotel.
+  Data: [{'id': 1203, 'Title': 'Time After Time', 'Year': 1979, 'Locations': 'Hyatt Regency Hotel (5 Embarcadero Center)', 'Fun_Facts': '', 'Director': 'Nicholas Meyer', 'Writer': 'Karl Alexander', 'Actor_1':
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+
+============================================================
+TEST SUITE SUMMARY
+============================================================
+  Passed: 10/10
+  Failed: 0/10
+
+  ✓ T11: Disjunction across same field
+  ✓ T12: Exact title match
+  ✓ T13: Title substring retrieval
+  ✓ T14: Multi-value director cell
+  ✓ T15: Location abbreviation variance
+  ✓ T16: Null / missing-field predicate
+  ✓ T17: Disjunction across different fields
+  ✓ T18: Retrieve then count dependency
+  ✓ T19: Retrieve then location-count dependency
+  ✓ T20: Cross-field AND with mixed predicates

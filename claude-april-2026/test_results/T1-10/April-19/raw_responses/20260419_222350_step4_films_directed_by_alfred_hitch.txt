@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by alfred hitchcock",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": "alfred hitchcock",
+        "type": "attribute"
+      }
+    }
+  ]
+}

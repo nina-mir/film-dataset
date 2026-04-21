@@ -1,0 +1,1 @@
+{"tasks": [{"id": "t1", "kind": "retrieve", "source": "films by alfred hitchcock from the 1950s", "dependsOn": [], "predicate": {"logic": "AND", "clauses": [{"field": "Director", "op": "==", "value": "alfred hitchcock", "type": "attribute"}, {"field": "Year", "op": "between", "value": [1950, 1959], "type": "attribute"}]}}]}

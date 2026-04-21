@@ -1,0 +1,6 @@
+data/trimmed_2025_raw_data.csv
+database/
+gemini-project/
+sanitized-locations/HERE_error_log.txt
+sanitized-locations/UPDATED-sanitize-address-geocode.json
+sanitized-locations/sanitize-address-geocode-added.json

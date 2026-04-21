@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films from 1985",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "==",
+        "value": 1985,
+        "type": "attribute"
+      }
+    }
+  ]
+}

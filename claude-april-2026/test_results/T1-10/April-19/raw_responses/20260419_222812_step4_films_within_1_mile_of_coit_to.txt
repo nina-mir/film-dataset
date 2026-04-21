@@ -1,0 +1,20 @@
+{
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films within 1 mile of coit tower",
+      "dependsOn": [],
+      "predicate": {
+        "field": "geometry",
+        "op": "within_distance",
+        "value": {
+          "reference_place": "coit tower",
+          "distance": 1,
+          "unit": "mile"
+        },
+        "type": "spatial"
+      }
+    }
+  ]
+}

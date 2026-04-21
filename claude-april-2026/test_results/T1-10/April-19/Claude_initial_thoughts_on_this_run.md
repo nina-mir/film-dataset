@@ -1,0 +1,35 @@
+Labels are correct this time (T1 is 3702 chars, not a placeholder), and T3 and T10 both have real code — the 429 quota and JSON envelope issues didn't recur. Let me look at the screen printout to see the outcomes first.9/10 this run — and the one failure is T5 again, same bug, same signature. That's strong signal. Let me look at T3 (passed this time) to see if the JSON envelope issue is gone, T5 (failed again) to confirm reproducibility, and T10 (passed for the first time) to see what it did.T5 is **byte-identical** between April 18 and April 19 runs. Same exact code, same bug, same line numbers. That makes it deterministic — not model variance. At temperature=0 and with the identical IR, Gemini produces the same output. Very useful signal. Let me check T3 and T10:Hold on — this is bad. Let me confirm by checking the T3 IR from the screen printout:Step 4 hit a 503 and fell back to null predicate. Codegen faithfully returned all 337 films with no filter. The pipeline marked this `SUCCESS`, but the user asked for Sean Penn films and got the entire dataset.
+
+Let me check T10:Very interesting. T1, T6, T7 are byte-identical between runs 2 and 3. T9 differs — same logic but with cosmetic variation (comment wording, variable naming, whether imports are at module or function level). So Gemini at temperature=0 is *mostly* deterministic per-IR, but with small local variations.
+
+Let me verify the claim about T3:Confirmed. Here's the full read-out of run 3.
+
+**9/10 passed, 1 failed.** But the score is misleading — T3 is a silent failure, and T5 is a reproducible deterministic bug. So the real picture is 8 genuinely correct + 1 silent failure + 1 deterministic bug.
+
+**T3 — "passed" for the wrong reason, third appearance of a different failure mode.** The pipeline reported success with "Found 337 unique films." But the user asked for Sean Penn films. What happened: Step 4 hit a 503 (same API weather as run 1's T1), fell back to `predicate: null`, codegen faithfully generated "no filter, return all rows" and returned the entire dataset of 337 unique films. The generated code is actually correct given a null-predicate retrieve task — it did exactly what the IR told it to. But the IR was wrong because Step 4 failed. Interestingly, the code includes a comment acknowledging the tension: "The natural language query 'films with sean penn' suggests a filter, but the provided IR's predicate is authoritative." The model noticed the mismatch and chose to trust the IR over the source text, which is the right call given your Section B invariants. The bug is upstream — the silent null-fallback in Step 4 is laundering API failures into valid-looking queries with wrong answers. This is item 6 (retry wrapper) showing its teeth. Three runs, three different T3 outcomes: OR-predicate success (run 1), JSON envelope failure (run 2), silent Sean Penn → all 337 films (run 3). T3's only stable property is that something goes wrong every time, but for different reasons.
+
+**T5 — byte-identical to run 2.** I diffed them. Same file, same bug, same line numbers, same `.to_dict()` on a dict. At temperature=0 with identical IR, Gemini produces the same output. So this is deterministic, not variance. Good news: that means fixing it once will fix it forever. Bad news: it means the prompt has a real gap that's reliably triggered. The specific shape — copy `task_results[...]['result']['ranking']` into `final_ranking`, then call `.to_dict()` on it when building the outer `result` — is something the model keeps reaching for because nothing in the prompt explicitly tells it "don't re-convert already-converted values." The two-invariant prompt edit I proposed earlier would fix this directly.
+
+**T10 — genuine first-time pass, no infra issue this run.** The code is well-structured: year filter, film-level dedup, melt the three actor columns into long form, dedup again at (Title, Year, Actor) level so "Michael Douglas in The Game" counts once even if he's Actor_1 and Actor_2, then `value_counts().head(10)`. Robin Williams at 8 films in the 90s is plausible — Mrs. Doubtfire, Jack, Good Will Hunting, Patch Adams, Bicentennial Man... the methodology is sound. Note also that T10 had kind=`retrieve` from Step 3 (the same misclassification you flagged earlier) but the codegen improvised rank logic anyway, using the word "most" in the source. So T3 shows the model respecting IR over source, T10 shows the model overriding IR with source. Two opposite behaviors on similar contract violations. That inconsistency is worth noting but not fixing today.
+
+**T1, T2, T4, T6, T7, T8, T9 — all correct, mostly byte-identical to run 2 (T9 had cosmetic variation).** T9 is interesting because it shows even under temperature=0 you get some drift — imports move between module-level and function-level, variable names change (`num_locations` vs implicit `len(final_data)`), offer_map metadata key comes and goes. None of that is functional, but it is observable. The rest being byte-identical confirms that for stable IRs and clean prompts, Gemini's output is essentially deterministic at this temperature.
+
+**Three-run pattern summary:**
+
+The `==` → `contains` swap is stable and reproducible across runs (T1 run 2, T3 run 1, T7 runs 1-2-3, T9 runs 1-2-3). It's a deterministic prompt bug waiting for item 3.
+
+T5's double-conversion is deterministic. One prompt edit fixes it.
+
+T3's failure mode is unstable because its *upstream* is unstable. Step 4 hits a 503 roughly 1 in 3 times in your testing window. When it does, the null-fallback silently converts "correct answer for Sean Penn" into "return all 337 films, label it success." This is the highest-priority issue you have, because it produces wrong answers that look right. Item 6 (retry wrapper) plus removing the null-fallback addresses it fully.
+
+The free-tier 429 quota didn't hit T10 this run — you likely had more headroom or tested at a better time. That issue is still latent, not fixed.
+
+**What I'd do next, in order:**
+
+Push the two-rule prompt edit (consistent output shape, no re-conversion) to get T5 off the failure list permanently. That's maybe 20 minutes of work and gets you to 10/10 on the stable tests.
+
+Then tackle item 6 (retry wrapper plus killing the null-fallback). That turns T3's silent failure into either a correct answer or an honest "service unavailable" — both acceptable outcomes. You'd also want to consider what "null predicate" genuinely means when Step 4 decides there's no filter needed (T5, T10 on retrieve) vs when Step 4 crashed. Two very different states, same IR shape. A new field like `predicate_confidence: "extracted" | "fallback"` would let downstream distinguish them.
+
+After that, item 3 (the ==/contains distinction in Step 4) for the longest-running issue.
+
+Good, informative third run. The reproducibility of T5 and the variation of T3 across three runs is exactly the kind of signal the categorization you set up was meant to surface.
