@@ -1,0 +1,701 @@
+
+############################################################
+  TEST 1/10: T1: Retrieve by Director (string ==)
+  Query: films directed by alfred hitchcock
+  Expected: retrieve, film granularity, Director predicate
+############################################################
+
+============================================================
+Query: films directed by alfred hitchcock
+============================================================
+
+[Step 1] Normalized: films directed by alfred hitchcock
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by alfred hitchcock",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215507_step4_films_directed_by_alfred_hitch.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by alfred hitchcock",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": "alfred hitchcock",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 380 chars
+  Prompt size: 57674 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215531_step6_films_directed_by_alfred_hitch.json
+  ✓ Code generated: 1895 chars
+  Explanation: The function filters the GeoDataFrame for rows where the 'Director' column matches 'alfred hitchcock' using a guarded case-insensitive search. It then...
+
+[Execution] ✓ Success
+  Summary: Found 4 films directed by alfred hitchcock.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 2/10: T2: Retrieve by Location (contains)
+  Query: films shot on market street
+  Expected: retrieve, film granularity, Locations contains
+############################################################
+
+============================================================
+Query: films shot on market street
+============================================================
+
+[Step 1] Normalized: films shot on market st
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films shot on market st",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215546_step4_films_shot_on_market_street.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films shot on market st",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "market st",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 369 chars
+  Prompt size: 57663 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215611_step6_films_shot_on_market_street.json
+  ✓ Code generated: 1693 chars
+  Explanation: The code processes the query by filtering the GeoDataFrame for rows where the 'Locations' column contains 'market st'. It then deduplicates the result...
+
+[Execution] ✓ Success
+  Summary: Found 29 films shot on market st
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 3/10: T3: Retrieve by Actor (virtual field)
+  Query: films with sean penn
+  Expected: retrieve, film granularity, Actor OR expansion
+############################################################
+
+============================================================
+Query: films with sean penn
+============================================================
+
+[Step 1] Normalized: films with sean penn
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with sean penn",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215630_step4_films_with_sean_penn.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with sean penn",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "OR",
+        "clauses": [
+          {
+            "field": "Actor_1",
+            "op": "==",
+            "value": "sean penn",
+            "type": "attribute"
+          },
+          {
+            "field": "Actor_2",
+            "op": "==",
+            "value": "sean penn",
+            "type": "attribute"
+          },
+          {
+            "field": "Actor_3",
+            "op": "==",
+            "value": "sean penn",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 746 chars
+  Prompt size: 58040 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215654_step6_films_with_sean_penn.json
+  ✓ Code generated: 1852 chars
+  Explanation: The code filters the GeoDataFrame for rows where 'sean penn' appears in any of the three actor columns using a vectorized OR operation. It then dedupl...
+
+[Execution] ✓ Success
+  Summary: Found 5 films featuring Sean Penn.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 4/10: T4: Count films in a decade
+  Query: how many films were shot in the 80s
+  Expected: count, scalar granularity, Year between 1980-1989
+############################################################
+
+============================================================
+Query: how many films were shot in the 80s
+============================================================
+
+[Step 1] Normalized: how many films were shot in the 80s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215705_step3_how_many_films_were_shot_in_the_80s.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "count",
+      "source": "how many films were shot in the 80s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215725_step4_how_many_films_were_shot_in_th.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "count",
+      "source": "how many films were shot in the 80s",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "between",
+        "value": [
+          1980,
+          1989
+        ],
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=scalar, offer_map=False
+  Top-level offer_map: False
+
+[Step 6] Generating code...
+  IR size: 407 chars
+  Prompt size: 57701 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215749_step6_how_many_films_were_shot_in_th.json
+  ✓ Code generated: 1784 chars
+  Explanation: The function filters the GeoDataFrame for rows where the 'Year' column is between 1980 and 1989 (inclusive). It then deduplicates these rows by 'Title...
+
+[Execution] ✓ Success
+  Summary: Found 39 films shot in the 80s.
+  Data keys: ['count', 'count_basis']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 5/10: T5: Rank directors by film count
+  Query: top 5 directors with the most films
+  Expected: rank, film granularity, no predicate filter (null or all rows)
+############################################################
+
+============================================================
+Query: top 5 directors with the most films
+============================================================
+
+[Step 1] Normalized: top 5 directors with the most films
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "top 5 directors with the most films",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215807_step4_top_5_directors_with_the_most_.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "top 5 directors with the most films",
+      "predicate": null,
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 262 chars
+  Prompt size: 57556 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215833_step6_top_5_directors_with_the_most_.json
+  ✓ Code generated: 2352 chars
+  Explanation: The code processes the request by first deduplicating the GeoDataFrame to the film level to ensure each film is counted only once per director. It the...
+
+[Execution] ✓ Success
+  Summary: The top 5 directors with the most films are: Andrew Haigh (11 films), Chris Columbus (4 films), Philip Kaufman (4 films), Alfred Hitchcock (4 films), Garry Marshall (4 films)
+  Data keys: ['ranking', 'rank_dimension', 'rank_basis', 'N']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 6/10: T6: Retrieve by Year (exact)
+  Query: films from 1985
+  Expected: retrieve, film granularity, Year == 1985
+############################################################
+
+============================================================
+Query: films from 1985
+============================================================
+
+[Step 1] Normalized: films from 1985
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films from 1985",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215852_step4_films_from_1985.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films from 1985",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "==",
+        "value": 1985,
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 343 chars
+  Prompt size: 57637 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215921_step6_films_from_1985.json
+  ✓ Code generated: 1691 chars
+  Explanation: The function processes the query by filtering the GeoDataFrame for rows where the 'Year' column equals 1985. It uses numeric coercion to ensure accura...
+
+[Execution] ✓ Success
+  Summary: Found 4 films from 1985.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 7/10: T7: Retrieve by Director + Year range (AND)
+  Query: films by alfred hitchcock from the 1950s
+  Expected: retrieve, film granularity, Director AND Year between
+############################################################
+
+============================================================
+Query: films by alfred hitchcock from the 1950s
+============================================================
+
+[Step 1] Normalized: films by alfred hitchcock from the 1950s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by alfred hitchcock from the 1950s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_215936_step4_films_by_alfred_hitchcock_from.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films by alfred hitchcock from the 1950s",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "alfred hitchcock",
+            "type": "attribute"
+          },
+          {
+            "field": "Year",
+            "op": "between",
+            "value": [
+              1950,
+              1959
+            ],
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 673 chars
+  Prompt size: 57967 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220005_step6_films_by_alfred_hitchcock_from.json
+  ✓ Code generated: 2166 chars
+  Explanation: The function filters the GeoDataFrame by applying a boolean mask that combines a case-insensitive string match for 'Alfred Hitchcock' in the Director ...
+
+[Execution] ✓ Success
+  Summary: Found 1 films directed by Alfred Hitchcock released between 1950 and 1959.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 8/10: T8: Spatial retrieve (within_distance)
+  Query: films within 1 mile of coit tower
+  Expected: retrieve, location granularity, geometry within_distance
+############################################################
+
+============================================================
+Query: films within 1 mile of coit tower
+============================================================
+
+[Step 1] Normalized: films within 1 mile of coit tower
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films within 1 mile of coit tower",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220023_step4_films_within_1_mile_of_coit_to.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films within 1 mile of coit tower",
+      "dependsOn": [],
+      "predicate": {
+        "field": "geometry",
+        "op": "within_distance",
+        "value": {
+          "reference_place": "coit tower",
+          "distance": 1,
+          "unit": "mile",
+          "latitude": 37.8024,
+          "longitude": -122.4058
+        },
+        "type": "spatial"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 541 chars
+  Prompt size: 57835 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220057_step6_films_within_1_mile_of_coit_to.json
+  ✓ Code generated: 2700 chars
+  Explanation: The code processes the spatial query by creating a reference point for Coit Tower, converting the 1-mile radius to meters, and reprojecting the data t...
+
+[Execution] ✓ Success
+  Summary: Found 189 films within 1 mile of coit tower
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 9/10: T9: Retrieve locations for a film
+  Query: show filming locations for vertigo
+  Expected: retrieve, location granularity, Title contains vertigo
+############################################################
+
+============================================================
+Query: show filming locations for vertigo
+============================================================
+
+[Step 1] Normalized: show filming locations for vertigo
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for vertigo",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+  [filter_extractor] Error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}, null predicates fallback
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for vertigo",
+      "dependsOn": [],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 265 chars
+  Prompt size: 57559 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220133_step6_show_filming_locations_for_ver.json
+  ✓ Code generated: 1843 chars
+  Explanation: The code filters the GeoDataFrame for rows where the 'Title' column matches 'vertigo' using a case-insensitive guarded string match. It then returns t...
+
+[Execution] ✓ Success
+  Summary: Found 16 filming locations for Vertigo.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 10/10: T10: Rank actors by film count in decade
+  Query: actors who appeared in the most films in the 90s
+  Expected: rank, film granularity, Year between 1990-1999
+############################################################
+
+============================================================
+Query: actors who appeared in the most films in the 90s
+============================================================
+
+[Step 1] Normalized: actors who appeared in the most films in the 90s
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "actors who appeared in the most films in the 90s",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220150_step4_actors_who_appeared_in_the_mos.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "actors who appeared in the most films in the 90s",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Year",
+        "op": "between",
+        "value": [
+          1990,
+          1999
+        ],
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 419 chars
+  Prompt size: 57713 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260422_220215_step6_actors_who_appeared_in_the_mos.json
+  ✓ Code generated: 2393 chars
+  Explanation: The code filters the GeoDataFrame for films released between 1990 and 1999. It then deduplicates the results to the film level to ensure each film is ...
+
+[Execution] ✓ Success
+  Summary: Found the top 10 actors who appeared in the most films during the 1990s.
+  Data keys: ['ranking', 'rank_dimension', 'rank_basis', 'N']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+
+============================================================
+TEST SUITE SUMMARY
+============================================================
+  Passed: 10/10
+  Failed: 0/10
+
+  ✓ T1: Retrieve by Director (string ==)
+  ✓ T2: Retrieve by Location (contains)
+  ✓ T3: Retrieve by Actor (virtual field)
+  ✓ T4: Count films in a decade
+  ✓ T5: Rank directors by film count
+  ✓ T6: Retrieve by Year (exact)
+  ✓ T7: Retrieve by Director + Year range (AND)
+  ✓ T8: Spatial retrieve (within_distance)
+  ✓ T9: Retrieve locations for a film
+  ✓ T10: Rank actors by film count in decade

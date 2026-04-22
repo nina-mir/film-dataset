@@ -29,3 +29,34 @@ Now to your real question — *what direction should Phase 2 take?* Here's how I
 My recommendation: **do Axis B next.** Two reasons. First, it's still single-task, so you stay inside Phase 1 scope and don't conflate predicate complexity with multi-task complexity. Second, it will almost certainly trip B2 (the `==`→`contains` codegen bug you've already documented but deferred), and probably surface a new bug or two around negation that you haven't seen yet — which is exactly the value of a second round.
 
 Save the genuinely weird stuff (Axis C) for a small dedicated "negative tests" suite of 3–4 cases, run separately, where the success criterion is *graceful refusal*, not correctness. Mixing them into a 10-test pass/fail suite muddies the signal.
+
+
+## B2 Status — April 21, 2026
+
+**Reclassification: policy, not bug.**
+
+`code_generation_v2.2.md` line 476 documents string `==` → guarded `str.contains(...)` translation as an intentional design choice, justified by dirty data in the source columns (casing, whitespace, formatting variance; comma-joined multi-value cells in Director).
+
+T11–T20 run confirmed this is working as designed:
+- T14 returned Michel Brezis from a multi-director cell — only reachable via `contains`.
+- T12 and T15 passed on non-colliding substrings; the policy introduces no false positives on the current dataset.
+
+**Known limitation.** The policy will produce false positives on queries where the user's intent is strict equality and the dataset contains substring collisions (hypothetical "the film called the rock" matching a "rockstar" title). None observed in current data.
+
+**If ever fixed, the fix is additive.** Do not change `==` behavior. Add a new IR operator for strict equality (e.g., `exact`) and route linguistically-strict phrasings ("the film *called* X," "titled exactly X") to it. Changing `==` would silently regress T14-class queries where permissive matching is doing useful work.
+
+**Priority.** Deferred indefinitely. Revisit only if a real query produces a user-visible wrong answer traceable to this policy.
+
+
+## Issue to address in the code_gen or code_execution parts
+One thing I want to flag before writing anything.
+Look at your current success return path:
+```python
+return {'success': True, 'result': result}
+```
+It returns result nested under a result key. But your failure returns use the flat shape:
+```python
+return {'success': False, 'data': None, 'summary': ..., 'metadata': ...}
+```
+These are two different shapes for the same function's return value. Any caller that reads ret['summary'] will get None or KeyError on success, and any caller that reads ret['result']['summary'] will fail on the failure path. This is an independent bug from the logging question, and it's almost certainly the reason "logging stopped working" — if an upstream caller is trying to read the result in a shape the success path doesn't provide, it may be silently swallowing the outcome somewhere. Worth checking whoever calls execute_code to see how they unpack it.
+I'm going to leave the return shape alone in the patch below (changing it is a separate concern), but I'd flag it for the next cleanup pass.
