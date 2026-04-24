@@ -1,0 +1,1137 @@
+[2026-04-24 04:13:52] code_execution
+Success: True
+Summary: Found 4 films directed by alfred hitchcock.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 34,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "1007 Gough St",
+      "Fun_Facts": "Tennis courts now sit on the site; in the movie the structure was Carlota Valdes' home.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.42432 37.78261)"
+    },
+    {
+      "id": 411,
+      "Title": "Family Plot",
+      "Year": 1976,
+      "Locations": "2230 Sacramento St",
+      "Fun_Facts": "Called \"1001 Franklin\" in the film.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Ernest Lehman",
+      "Actor_1": "Karen Black",
+      "Actor_2": "Bruce Dern",
+      "Actor_3": "Barbara Harris",
+      "geometry": "POINT (-122.43056 37.79055)"
+    },
+    {
+      "id": 794,
+      "Title": "Marnie",
+      "Year": 1964,
+      "Locations": "On Board the SS President Cleveland, docked at Pier 50",
+      "Fun_Facts": "",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Jay Presson Allen",
+      "Actor_1": "Tippi Hedren",
+      "Actor_2": "Sean Connery",
+      "Actor_3": "Martin Gabel",
+      "geometry": "POINT (-122.40246 37.76335)"
+    },
+    {
+      "id": 2029,
+      "Title": "The Birds",
+      "Year": 1963,
+      "Locations": "Powell and Geary St (Union Square)",
+      "Fun_Facts": "The pet shop featured in the film does not exist, but was based on the now-closed Robison's House of Pets formerly located on Maiden Lane.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Evan Hunter",
+      "Actor_1": "Tippi Hedren",
+      "Actor_2": "Suzanne Pleshette",
+      "Actor_3": "Rod Taylor",
+      "geometry": "POINT (-122.40821 37.78736)"
+    }
+  ],
+  "count": 4
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films directed by alfred hitchcock ──
+        director_str = gdf_copy['Director'].astype(str)
+        mask_t1 = (
+            gdf_copy['Director'].notna() &
+            director_str.str.strip().ne('') &
+            ~director_str.str.lower().isin(['none', 'nan', 'null']) &
+            director_str.str.contains('alfred hitchcock', case=False, na=False)
+        )
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(t1_text_view)} films directed by alfred hitchcock.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-24 04:14:34] code_execution
+Success: True
+Summary: Found 29 films shot on market st
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 49,
+      "Title": "The Net",
+      "Year": 1995,
+      "Locations": "Montgomery & Market St",
+      "Fun_Facts": "",
+      "Director": "Irwin Winkler",
+      "Writer": "John Brancato",
+      "Actor_1": "Sandra Bullock",
+      "Actor_2": "Jeremy Northam",
+      "Actor_3": "",
+      "geometry": "POINT (-122.40166 37.78921)"
+    },
+    {
+      "id": 55,
+      "Title": "Terminator - Genisys",
+      "Year": 2015,
+      "Locations": "1 Market St Landmark Building",
+      "Fun_Facts": "",
+      "Director": "Alan Taylor",
+      "Writer": "James Cameron",
+      "Actor_1": "Arnold Schwarzenegger",
+      "Actor_2": "Jason Clarke",
+      "Actor_3": "",
+      "geometry": "POINT (-122.39499 37.79398)"
+    },
+    {
+      "id": 68,
+      "Title": "The Game",
+      "Year": 1997,
+      "Locations": "Sheraton Palace Hotel (639 Market St)",
+      "Fun_Facts": "The hotel was destroyed in the 1906 earthquake and fire, had to be rebuilt, and was reopened in 1909.",
+      "Director": "David Fincher",
+      "Writer": "John Brancato",
+      "Actor_1": "Michael Douglas",
+      "Actor_2": "Sean Penn",
+      "Actor_3": "Deborah Kara Unger",
+      "geometry": "POINT (-122.40208 37.78852)"
+    },
+    {
+      "id": 97,
+      "Title": "Bedazzled",
+      "Year": 2000,
+      "Locations": "Montgomery & Market St",
+      "Fun_Facts": "",
+      "Director": "Harold Ramis",
+      "Writer": "Harold Ramis",
+      "Actor_1": "Brendan Fraser",
+      "Actor_2": "Elizabeth Hurley",
+      "Actor_3": "",
+      "geometry": "POINT (-122.40166 37.78921)"
+    },
+    {
+      "id": 143,
+      "Title": "Looking \"Special\"",
+      "Year": 2016,
+      "Locations": "Van Ness and Market St MUNI exit",
+      "Fun_Facts": "The character of Doris was originally a recurring role, but everyone on the team liked Lauren Weedman's performance so much that she became a full time regular during the second season.",
+      "Director": "Andrew Haigh",
+      "Writer": "Michael Lannan",
+      "Actor_1"
+... [truncated, 11947 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films shot on market st ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('market st', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(task_results['t1']['text_view'])} films shot on market st",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        error_result = {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+        return error_result
+========================================================================
+
+[2026-04-24 04:15:24] code_execution
+Success: True
+Summary: Found 5 films featuring Sean Penn.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 68,
+      "Title": "The Game",
+      "Year": 1997,
+      "Locations": "Sheraton Palace Hotel (639 Market St)",
+      "Fun_Facts": "The hotel was destroyed in the 1906 earthquake and fire, had to be rebuilt, and was reopened in 1909.",
+      "Director": "David Fincher",
+      "Writer": "John Brancato",
+      "Actor_1": "Michael Douglas",
+      "Actor_2": "Sean Penn",
+      "Actor_3": "Deborah Kara Unger",
+      "geometry": "POINT (-122.40208 37.78852)"
+    },
+    {
+      "id": 324,
+      "Title": "Milk",
+      "Year": 2008,
+      "Locations": "29th and Dolores St",
+      "Fun_Facts": "",
+      "Director": "Gus Van Sant",
+      "Writer": "Dustin Lance Black",
+      "Actor_1": "Sean Penn",
+      "Actor_2": "Emile Hirsch",
+      "Actor_3": "",
+      "geometry": "POINT (-122.42651 37.76856)"
+    },
+    {
+      "id": 555,
+      "Title": "Crackers",
+      "Year": 1984,
+      "Locations": "24th St between Mission St and Potrero Ave",
+      "Fun_Facts": "",
+      "Director": "Louis Malle",
+      "Writer": "Jeffrey Fiskin",
+      "Actor_1": "Donald Sutherland",
+      "Actor_2": "Jack Warden",
+      "Actor_3": "Sean Penn",
+      "geometry": "POINT (-122.41173 37.7528)"
+    },
+    {
+      "id": 1438,
+      "Title": "The Assassination of Richard Nixon",
+      "Year": 2004,
+      "Locations": "766 Sutter St",
+      "Fun_Facts": "",
+      "Director": "Niels Mueller",
+      "Writer": "Niels Mueller & Kevin Kennedy",
+      "Actor_1": "Sean Penn",
+      "Actor_2": "Naomi Watts",
+      "Actor_3": "",
+      "geometry": "POINT (-122.41312 37.78894)"
+    },
+    {
+      "id": 1956,
+      "Title": "Casualties of War",
+      "Year": 1989,
+      "Locations": "Mission Dolores Park (Mission District) via J-Church MUNI Train",
+      "Fun_Facts": "The two land plots that comprise the Park were used as a Jewish cemetery until 1894 when San Francisco prohibited all burials within city limits. The graves were moved to Colma, CA.",
+      "Director": "Brian DePalma"
+... [truncated, 2191 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films with sean penn ──
+        actor_name = 'sean penn'
+        actor_cols = ['Actor_1', 'Actor_2', 'Actor_3']
+        mask_actor = (
+            gdf_copy[actor_cols]
+            .astype(str)
+            .apply(lambda c: c.str.contains(actor_name, case=False, na=False))
+            .any(axis=1)
+        )
+        
+        t1_matched_rows = gdf_copy.loc[mask_actor]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(task_results['t1']['text_view'])} films featuring Sean Penn.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-24 04:16:23] code_execution
+Success: True
+Summary: There were 39 films shot in the 80s.
+Metadata: {'query_type': 'count', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "count": 39,
+  "count_basis": "films"
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: count films in the 80s ────────────────────────────
+        year_numeric = pd.to_numeric(gdf_copy['Year'], errors='coerce')
+        mask_t1 = year_numeric.between(1980, 1989, inclusive='both')
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+
+        # Count distinct films
+        t1_film_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+        t1_count = len(t1_film_view)
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': None,
+            'result': {
+                'count': t1_count,
+                'count_basis': 'films'
+            }
+        }
+
+        # ── Assemble final result ──────────────────────────────────────
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"There were {t1_count} films shot in the 80s.",
+            'metadata': {
+                'query_type': 'count',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-24 04:17:11] code_execution
+Success: True
+Summary: The top 5 directors with the most films are: Andrew Haigh (11), Chris Columbus (4), Philip Kaufman (4), Alfred Hitchcock (4), Garry Marshall (4).
+Metadata: {'query_type': 'rank', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "ranking": {
+    "Andrew Haigh": 11,
+    "Chris Columbus": 4,
+    "Philip Kaufman": 4,
+    "Alfred Hitchcock": 4,
+    "Garry Marshall": 4
+  },
+  "rank_dimension": "directors",
+  "rank_basis": "films",
+  "N": 5
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: Rank top 5 directors ──
+        # No predicate, so use all rows
+        matched_rows = gdf_copy
+
+        # Deduplicate to film level to count films per director
+        film_df = matched_rows.drop_duplicates(subset=['Title', 'Year'], keep='first')
+
+        # Count films per director
+        director_counts = clean_column_data(film_df['Director']).value_counts()
+
+        # Take top 5
+        N = 5
+        top_directors = director_counts.head(N)
+
+        task_results['t1'] = {
+            'matched_rows': matched_rows,
+            'text_view': film_df.drop_duplicates(subset=['Title', 'Year']),
+            'result': {
+                'ranking': top_directors.to_dict(),
+                'rank_dimension': 'directors',
+                'rank_basis': 'films',
+                'N': N
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f'The top 5 directors with the most films are: {', '.join([f'{d} ({c})' for d, c in top_directors.items()])}.',
+            'metadata': {
+                'query_type': 'rank',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f'Error processing query: {str(e)}',
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-24 04:18:00] code_execution
+Success: True
+Summary: Found 4 films from 1985.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 4,
+      "Title": "A View to a Kill",
+      "Year": 1985,
+      "Locations": "Taylor and Jefferson St (Fisherman's Wharf)",
+      "Fun_Facts": "",
+      "Director": "John Glen",
+      "Writer": "Richard Maibaum",
+      "Actor_1": "Roger Moore",
+      "Actor_2": "Christopher Walken",
+      "Actor_3": "Tanya Roberts",
+      "geometry": "POINT (-122.41579 37.80823)"
+    },
+    {
+      "id": 260,
+      "Title": "Jagged Edge",
+      "Year": 1985,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Richard Marquand",
+      "Writer": "Joe Eszterhas",
+      "Actor_1": "Glenn Close",
+      "Actor_2": "Jeff Bridges",
+      "Actor_3": "Peter Coyote",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 612,
+      "Title": "Maxie",
+      "Year": 1985,
+      "Locations": "Grace Cathedral Episcopal Church (1100 California St)",
+      "Fun_Facts": "Grace Cathedral Episcopal Church is the West Coast's largest Episcopalian cathedral.",
+      "Director": "Paul Aaron",
+      "Writer": "Patricia Resnick",
+      "Actor_1": "Glenn Close",
+      "Actor_2": "Mandy Patinkin",
+      "Actor_3": "Ruth Gordon",
+      "geometry": "POINT (-122.41338 37.792)"
+    },
+    {
+      "id": 760,
+      "Title": "Dim Sum: A Little Bit of Heart",
+      "Year": 1985,
+      "Locations": "Chinatown",
+      "Fun_Facts": "First established in the mid-19th Century, SF's Chinatown is the oldest and largest Chinatown in the US.",
+      "Director": "Wayne Wang",
+      "Writer": "Terrel Seltzer",
+      "Actor_1": "Laureen Chew",
+      "Actor_2": "Kim Chew",
+      "Actor_3": "Victor Wong",
+      "geometry": "POINT (-122.40681 37.79694)"
+    }
+  ],
+  "count": 4
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films from 1985 ──
+        year_numeric = pd.to_numeric(gdf_copy['Year'], errors='coerce')
+        mask_t1 = (year_numeric == 1985)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(task_results['t1']['text_view'])} films from 1985.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        error_result = {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+        return error_result
+========================================================================
+
+[2026-04-24 04:18:48] code_execution
+Success: True
+Summary: Found 1 films directed by Alfred Hitchcock released between 1950 and 1959.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 34,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "1007 Gough St",
+      "Fun_Facts": "Tennis courts now sit on the site; in the movie the structure was Carlota Valdes' home.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.42432 37.78261)"
+    }
+  ],
+  "count": 1
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films by alfred hitchcock from the 1950s ──
+        director_str = gdf_copy['Director'].astype(str)
+        mask_director = (
+            gdf_copy['Director'].notna() &
+            director_str.str.strip().ne('') &
+            ~director_str.str.lower().isin(['none', 'nan', 'null']) &
+            director_str.str.contains('alfred hitchcock', case=False, na=False)
+        )
+
+        year_numeric = pd.to_numeric(gdf_copy['Year'], errors='coerce')
+        mask_year = year_numeric.between(1950, 1959, inclusive='both')
+
+        combined_mask = mask_director & mask_year
+        t1_matched_rows = gdf_copy.loc[combined_mask]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(t1_text_view)} films directed by Alfred Hitchcock released between 1950 and 1959.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        error_result = {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+        return error_result
+========================================================================
+
+[2026-04-24 04:19:35] code_execution
+Success: True
+Summary: Found 189 films within 1 mile of coit tower
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 1,
+      "Title": "Experiment in Terror",
+      "Year": 1962,
+      "Locations": "The Sea Captain's Chest (Fisherman's Wharf)",
+      "Fun_Facts": "",
+      "Director": "Blake Edwards",
+      "Writer": "The Gordons",
+      "Actor_1": "Glenn Ford",
+      "Actor_2": "Lee Remick",
+      "Actor_3": "Stefanie Powers",
+      "geometry": "POINT (-122.41025 37.80888)"
+    },
+    {
+      "id": 3,
+      "Title": "Chan is Missing",
+      "Year": 1982,
+      "Locations": "Li Po (916 Grant Ave at Washington, Chinatown)",
+      "Fun_Facts": "",
+      "Director": "Wayne Wang",
+      "Writer": "Wayne Wang",
+      "Actor_1": "Wood Moy",
+      "Actor_2": "Marc Hayashi",
+      "Actor_3": "Lauren Chew",
+      "geometry": "POINT (-122.40632 37.79536)"
+    },
+    {
+      "id": 4,
+      "Title": "A View to a Kill",
+      "Year": 1985,
+      "Locations": "Taylor and Jefferson St (Fisherman's Wharf)",
+      "Fun_Facts": "",
+      "Director": "John Glen",
+      "Writer": "Richard Maibaum",
+      "Actor_1": "Roger Moore",
+      "Actor_2": "Christopher Walken",
+      "Actor_3": "Tanya Roberts",
+      "geometry": "POINT (-122.41579 37.80823)"
+    },
+    {
+      "id": 7,
+      "Title": "I's",
+      "Year": 2011,
+      "Locations": "1 Post St",
+      "Fun_Facts": "",
+      "Director": "Chris Edgette",
+      "Writer": "Kyle Tuck",
+      "Actor_1": "",
+      "Actor_2": "",
+      "Actor_3": "",
+      "geometry": "POINT (-122.40257 37.78877)"
+    },
+    {
+      "id": 9,
+      "Title": "Nash Bridges",
+      "Year": 2021,
+      "Locations": "California St at Davis",
+      "Fun_Facts": "",
+      "Director": "Greg Beeman",
+      "Writer": "Carlton Cuse, Bill Chais",
+      "Actor_1": "Don Johnson",
+      "Actor_2": "Cheech Marin",
+      "Actor_3": "Joe Dinicol",
+      "geometry": "POINT (-122.39763 37.7935)"
+    },
+    {
+      "id": 11,
+      "Title": "The Rock",
+      "Year": 1996,
+      "Locations": "Coit Tower",
+      "Fun_Facts": "The Tower was funded by a gift beque
+... [truncated, 80263 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+    from shapely.geometry import Point
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films within 1 mile of coit tower ──
+        ref_point = Point(-122.4058, 37.8024)
+        distance_value = 1
+        unit = 'mile'
+        UNIT_TO_METERS = {
+            "mile": 1609.34, "miles": 1609.34,
+            "km": 1000.0, "kilometer": 1000.0, "kilometers": 1000.0,
+            "m": 1.0, "meter": 1.0, "meters": 1.0,
+            "ft": 0.3048, "feet": 0.3048,
+        }
+        if unit.lower() not in UNIT_TO_METERS:
+            raise ValueError(f"Unsupported distance unit: {unit}")
+        distance_meters = distance_value * UNIT_TO_METERS[unit.lower()]
+
+        valid_geom_mask = gdf_copy.geometry.notna() & ~gdf_copy.geometry.is_empty
+        gdf_for_spatial = gdf_copy.loc[valid_geom_mask]
+        gdf_projected = gdf_for_spatial.to_crs(epsg=32610)
+        ref_series = gpd.GeoSeries([ref_point], crs="EPSG:4326")
+        ref_projected = ref_series.to_crs(epsg=32610).iloc[0]
+
+        distances = gdf_projected.geometry.distance(ref_projected)
+        mask_within = (distances <= distance_meters)
+        mask_spatial = pd.Series(False, index=gdf_copy.index)
+        mask_spatial.loc[mask_within.index[mask_within]] = True
+
+        t1_matched_rows = gdf_copy.loc[mask_spatial]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=["Title", "Year"])
+
+        task_results["t1"] = {
+            "matched_rows": t1_matched_rows,
+            "text_view": t1_text_view,
+            "result": {
+                "records": t1_text_view.to_dict("records"),
+                "count": len(t1_text_view),
+            }
+        }
+
+        result = {
+            'data': task_results["t1"]["result"],
+            'summary': f"Found {len(t1_text_view)} films within 1 mile of coit tower",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ["t1"],
+            }
+        }
+        return result
+
+    except Exception as e:
+        error_result = {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+        return error_result
+========================================================================
+
+[2026-04-24 04:20:29] code_execution
+Success: True
+Summary: Found 16 filming locations for the film vertigo.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 34,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "1007 Gough St",
+      "Fun_Facts": "Tennis courts now sit on the site; in the movie the structure was Carlota Valdes' home.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.42432 37.78261)"
+    },
+    {
+      "id": 73,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "Park Hill Sanatorium (351 Buena Vista Ave East)",
+      "Fun_Facts": "This location is now a condominium complex.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.4396 37.76688)"
+    },
+    {
+      "id": 342,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "Fairmont Hotel (950 Mason St, Nob Hill)",
+      "Fun_Facts": "In 1945 the Fairmont hosted the United Nations Conference on International Organization as delegates arrived to draft a charter for the organization. The U.S. Secretary of State, Edward Stettinius drafted the charter in the hotel's Garden Room.",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.41009 37.79242)"
+    },
+    {
+      "id": 480,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "Mission San Juan Bautista (2nd & Mariposa St)",
+      "Fun_Facts": "",
+      "Director": "Alfred Hitchcock",
+      "Writer": "Alec Coppel",
+      "Actor_1": "James Stewart",
+      "Actor_2": "Kim Novak",
+      "Actor_3": "Barbara Bel Geddes",
+      "geometry": "POINT (-122.40246 37.76335)"
+    },
+    {
+      "id": 540,
+      "Title": "Vertigo",
+      "Year": 1958,
+      "Locations": "Palace of F
+... [truncated, 7377 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import geopandas as gpd
+    import numpy as np
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve filming locations for vertigo ──
+        title_str = gdf_copy['Title'].astype(str)
+        mask_t1 = (
+            gdf_copy['Title'].notna() &
+            title_str.str.strip().ne('') &
+            ~title_str.str.lower().isin(['none', 'nan', 'null']) &
+            title_str.str.contains('vertigo', case=False, na=False)
+        )
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(t1_text_view)} filming locations for the film vertigo.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-24 04:21:17] code_execution
+Success: True
+Summary: Found the top 10 actors who appeared in the most films in the 1990s.
+Metadata: {'query_type': 'rank', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "ranking": {
+    "Robin Williams": 8,
+    "Eddie Murphy": 3,
+    "Meg Ryan": 3,
+    "Andy Garcia": 2,
+    "Michael Douglas": 2,
+    "Lauren Holly": 2,
+    "Julia Roberts": 2,
+    "Nicolas Cage": 2,
+    "Richard Gere": 2,
+    "Sharon Stone": 2
+  },
+  "rank_dimension": "actors",
+  "rank_basis": "films",
+  "N": 10
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films in the 90s ──
+        year_numeric = pd.to_numeric(gdf_copy['Year'], errors='coerce')
+        mask_t1 = year_numeric.between(1990, 1999, inclusive='both')
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        # Rank actors by film frequency
+        film_df = t1_text_view.copy()
+        actor_cols = ['Actor_1', 'Actor_2', 'Actor_3']
+        actor_table = film_df[['Title', 'Year']].join(film_df[actor_cols]).melt(
+            id_vars=['Title', 'Year'], value_vars=actor_cols, value_name='Actor'
+        )
+        actor_table['Actor'] = actor_table['Actor'].astype(str).str.strip()
+        actor_table = actor_table.replace({'Actor': {'': np.nan, 'nan': np.nan, 'None': np.nan, 'NaN': np.nan}})
+        actor_table = actor_table.dropna(subset=['Actor']).drop_duplicates(subset=['Title', 'Year', 'Actor'])
+
+        top_actors = actor_table['Actor'].value_counts().head(10)
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'ranking': top_actors.to_dict(),
+                'rank_dimension': 'actors',
+                'rank_basis': 'films',
+                'N': 10
+            }
+        }
+
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': 'Found the top 10 actors who appeared in the most films in the 1990s.',
+            'metadata': {
+                'query_type': 'rank',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f'Error processing query: {str(e)}',
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
