@@ -48,6 +48,22 @@
 - **Verification**: T2 run 2 and 3 no longer produce the `SyntaxError: unterminated f-string literal`.
 
 ---
+## B2 Status — April 21, 2026
+
+**Reclassification: policy, not bug.**
+
+`code_generation_v2.2.md` line 476 documents string `==` → guarded `str.contains(...)` translation as an intentional design choice, justified by dirty data in the source columns (casing, whitespace, formatting variance; comma-joined multi-value cells in Director).
+
+T11–T20 run confirmed this is working as designed:
+- T14 returned Michel Brezis from a multi-director cell — only reachable via `contains`.
+- T12 and T15 passed on non-colliding substrings; the policy introduces no false positives on the current dataset.
+
+**Known limitation.** The policy will produce false positives on queries where the user's intent is strict equality and the dataset contains substring collisions (hypothetical "the film called the rock" matching a "rockstar" title). None observed in current data.
+
+**If ever fixed, the fix is additive.** Do not change `==` behavior. Add a new IR operator for strict equality (e.g., `exact`) and route linguistically-strict phrasings ("the film *called* X," "titled exactly X") to it. Changing `==` would silently regress T14-class queries where permissive matching is doing useful work.
+
+**Priority.** Deferred indefinitely. Revisit only if a real query produces a user-visible wrong answer traceable to this policy.
+---
 
 ## Reproducible Bugs (deterministic, next to fix)
 
@@ -60,6 +76,7 @@
 - **Proposed fix**: Two new prompt invariants in Section B of `code_generation_v2.md`:
   - Invariant 23: `data` field must always be a list of dicts for retrieve tasks, scalar for count, dict for rank. No `to_json()` strings.
   - Invariant 24: Once a value is stored in `task_results[...]['result']`, do not apply additional `.to_dict()`, `.tolist()`, or `.to_json()` to it when assembling the outer `result`.
+
 
 ### B2. `==` → `contains` operator swap on string fields
 - **Severity**: Medium (produces correct answers on current data, but will fail on substring collisions)
