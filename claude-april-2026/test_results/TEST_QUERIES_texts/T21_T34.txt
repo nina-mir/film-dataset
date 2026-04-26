@@ -1,0 +1,119 @@
+PHASE_3_TESTS = [
+    {
+        "name": "T21: Cross-field AND (Director + location)",
+        "query": "films directed by nicholas meyer at golden gate bridge",
+        "expect": "single-task retrieve; film granularity; Director == nicholas meyer AND Locations contains golden gate bridge",
+    },
+    {
+        "name": "T22: Cross-field AND (Actor + location)",
+        "query": "films with roger moore at port of san francisco",
+        "expect": "single-task retrieve; film granularity; Actor == roger moore AND Locations contains port of san francisco",
+    },
+    {
+        "name": "T23: Cross-field AND (Writer + location)",
+        "query": "films written by linda demetrick at hyatt hotel",
+        "expect": "single-task retrieve; film granularity; Writer == linda demetrick AND Locations contains hyatt hotel",
+    },
+    {
+        "name": "T24: Cross-field OR (Director OR writer)",
+        "query": "films directed by andrew haigh or written by kay cannon",
+        "expect": "single-task retrieve; film granularity; OR predicate across Director == andrew haigh and Writer == kay cannon",
+    },
+    {
+        "name": "T25: Cross-field OR (Title OR location)",
+        "query": "films called time after time or shot at pier 43",
+        "expect": "single-task retrieve; film granularity; OR predicate across Title contains time after time and Locations contains pier 43",
+    },
+    {
+        "name": "T26: Constraint vs output dimension (writers at location)",
+        "query": "which writers filmed at golden gate bridge",
+        "expect": "single-task retrieve; writer is output dimension, not filter; predicate should be Locations contains golden gate bridge only",
+    },
+    {
+        "name": "T27: Constraint vs output dimension (actors at location and year)",
+        "query": "which actors filmed at port of san francisco in 1985",
+        "expect": "single-task retrieve; actor is output dimension, not filter; predicate should be Locations contains port of san francisco AND Year == 1985",
+    },
+    {
+        "name": "T28: Cross-field AND (Title + location)",
+        "query": "show filming locations for the oa part ii at pier 43",
+        "expect": "single-task retrieve; location granularity; Title contains the oa part ii AND Locations contains pier 43",
+    },
+    {
+        "name": "T29: Retrieve -> count (film basis)",
+        "query": "films shot at golden gate bridge and how many are there",
+        "expect": "two tasks; t1 retrieve with Locations contains golden gate bridge; t2 count dependsOn t1 with null predicate; scalar count_basis should default to films",
+    },
+    {
+        "name": "T30: Retrieve -> count (location basis)",
+        "query": "show filming locations for the oa part ii and how many locations are there",
+        "expect": "two tasks; t1 retrieve with Title contains the oa part ii and location granularity; t2 count dependsOn t1 with null predicate; scalar count_basis should be locations",
+    },
+    {
+        "name": "T31: Retrieve -> dependent narrow with added predicate",
+        "query": "films shot at golden gate bridge and which of those were directed by nicholas meyer",
+        "expect": "two tasks; t1 retrieve with Locations contains golden gate bridge; t2 retrieve dependsOn t1 with new predicate Director == nicholas meyer only",
+    },
+    {
+        "name": "T32: Retrieve -> rank within dependency subset",
+        "query": "films shot at golden gate bridge and which directors appear most often there",
+        "expect": "two tasks; t1 retrieve with Locations contains golden gate bridge; t2 rank dependsOn t1 with null predicate; ranking dimension is Director, not a filter",
+    },
+    {
+        "name": "T33: Retrieve -> retrieve -> compare",
+        "query": "films shot at golden gate bridge and films shot at port of san francisco and compare them",
+        "expect": "three tasks; t1 retrieve with Locations contains golden gate bridge; t2 retrieve with Locations contains port of san francisco; t3 compare dependsOn [t1, t2] with null predicate",
+    },
+    {
+    "name": "T34: Retrieve -> count with potentially competing film/location cues",
+    "query": "show filming locations for time after time and how many films are represented there",
+    "expect": "two tasks; t1 retrieve with Title contains time after time and location granularity; t2 count dependsOn t1 with null predicate; primary diagnostic: whether count_basis is decided from t2 source text alone or inherited from t1's location-oriented framing; expected-preferred outcome is films, but locations would be an informative semantic finding rather than a pure regression",
+    }
+]
+
+
+ordering considerations:
+
+
+**Run 1: T21–T28**
+This is the **single-task semantic batch**.
+
+Why first:
+
+* it isolates Step 4 semantic behavior cleanly
+* if something fails here, you’ll know it is likely predicate extraction / presentation logic, not dependency handling
+* it gives you a clean read on cross-field AND, cross-field OR, and constraint-vs-output-dimension behavior before adding chain complexity
+
+That batch is:
+
+* T21
+* T22
+* T23
+* T24
+* T25
+* T26
+* T27
+* T28
+
+**Run 2: T29–T34**
+This is the **multi-task dependency batch**.
+
+Why second:
+
+* these tests depend on the pipeline correctly handling `dependsOn`, `matched_rows` reuse, and count/rank/compare behavior
+* if you run them first, it will be harder to tell whether a failure is basic semantics or dependency orchestration
+* T34 is especially diagnostic, so it belongs with the dependency group
+
+That batch is:
+
+* T29
+* T30
+* T31
+* T32
+* T33
+* T34
+
+So the logic is:
+
+* **first** confirm the pipeline still behaves well on harder **single-task** semantics
+* **then** move to the richer **dependency** semantics

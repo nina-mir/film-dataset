@@ -1,0 +1,1512 @@
+[2026-04-26 07:48:34] code_execution
+Success: True
+Summary: Found 1 film(s) featuring Roger Moore at the Port of San Francisco.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 405,
+      "Title": "A View to a Kill",
+      "Year": 1985,
+      "Locations": "Port of San Francisco",
+      "Fun_Facts": "",
+      "Director": "John Glen",
+      "Writer": "Richard Maibaum",
+      "Actor_1": "Roger Moore",
+      "Actor_2": "Christopher Walken",
+      "Actor_3": "Tanya Roberts",
+      "geometry": "POINT (-122.39461 37.79732)"
+    }
+  ],
+  "count": 1
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films with roger moore at port of san francisco ──
+        actor_name = 'roger moore'
+        actor_cols = ['Actor_1', 'Actor_2', 'Actor_3']
+        mask_actor = (
+            gdf_copy[actor_cols]
+            .astype(str)
+            .apply(lambda c: c.str.contains(actor_name, case=False, na=False))
+            .any(axis=1)
+        )
+
+        mask_location = gdf_copy['Locations'].astype(str).str.contains('port of san francisco', case=False, na=False)
+
+        combined_mask = mask_actor & mask_location
+        matched_rows = gdf_copy.loc[combined_mask]
+
+        text_view = matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': matched_rows,
+            'text_view': text_view,
+            'result': {
+                'records': text_view.to_dict('records'),
+                'count': len(text_view),
+            }
+        }
+
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f'Found {len(text_view)} film(s) featuring Roger Moore at the Port of San Francisco.',
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f'Error processing query: {str(e)}',
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-26 07:49:04] code_execution
+Success: True
+Summary: Found 1 film(s) written by linda demetrick filmed at hyatt hotel.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 902,
+      "Title": "Smile Again, Jenny Lee",
+      "Year": 2015,
+      "Locations": "Hyatt Hotel (555 North Point St)",
+      "Fun_Facts": "",
+      "Director": "Carlo Caldana",
+      "Writer": "Linda Demetrick",
+      "Actor_1": "Craig Tsuyumine",
+      "Actor_2": "Puneet Prasad",
+      "Actor_3": "Larry Kitagawa",
+      "geometry": "POINT (-122.41595 37.80589)"
+    }
+  ],
+  "count": 1
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films written by linda demetrick at hyatt hotel ──
+        writer_str = gdf_copy['Writer'].astype(str)
+        mask_writer = (
+            gdf_copy['Writer'].notna() &
+            writer_str.str.strip().ne('') &
+            ~writer_str.str.lower().isin(['none', 'nan', 'null']) &
+            writer_str.str.contains('linda demetrick', case=False, na=False)
+        )
+
+        mask_location = gdf_copy['Locations'].astype(str).str.contains('hyatt hotel', case=False, na=False)
+
+        combined_mask = mask_writer & mask_location
+        t1_matched_rows = gdf_copy.loc[combined_mask]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(t1_text_view)} film(s) written by linda demetrick filmed at hyatt hotel.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:49:33] code_execution
+Success: True
+Summary: Found 12 films directed by andrew haigh or written by kay cannon.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 17,
+      "Title": "GirlBoss",
+      "Year": 2017,
+      "Locations": "The Castro Theater, 429 Castro St",
+      "Fun_Facts": "",
+      "Director": "Jamie Babbit, Amanda Brotchie, Steven K. Tsuchida, Christian Ditter, John Riggi",
+      "Writer": "Kay Cannon",
+      "Actor_1": "Britt Robertson",
+      "Actor_2": "Ellie Reed",
+      "Actor_3": "Amanda Rea",
+      "geometry": "POINT (-122.43469 37.76201)"
+    },
+    {
+      "id": 43,
+      "Title": "Looking Season 2 ep 202",
+      "Year": 2015,
+      "Locations": "Eddy @ Polk St",
+      "Fun_Facts": "",
+      "Director": "Andrew Haigh",
+      "Writer": "Michael Lannan",
+      "Actor_1": "Jonathan Groff",
+      "Actor_2": "Frankie Alvarez",
+      "Actor_3": "Murray Bartlett",
+      "geometry": "POINT (-122.41918 37.78308)"
+    },
+    {
+      "id": 85,
+      "Title": "Looking",
+      "Year": 2014,
+      "Locations": "Fort Funston",
+      "Fun_Facts": "",
+      "Director": "Andrew Haigh",
+      "Writer": "Michael Lannan",
+      "Actor_1": "Jonathan Groff",
+      "Actor_2": "Frankie J. Alvarez",
+      "Actor_3": "Murray Bartlett",
+      "geometry": "POINT (-122.49929 37.71374)"
+    },
+    {
+      "id": 89,
+      "Title": "Looking Season 2 ep 209",
+      "Year": 2015,
+      "Locations": "Mission Arts Center, 2450 Harrison St",
+      "Fun_Facts": "",
+      "Director": "Andrew Haigh",
+      "Writer": "Michael Lannan",
+      "Actor_1": "Jonathan Groff",
+      "Actor_2": "Frankie Alvarez",
+      "Actor_3": "Murray Bartlett",
+      "geometry": "POINT (-122.41259 37.75815)"
+    },
+    {
+      "id": 105,
+      "Title": "Looking \"Special\"",
+      "Year": 2016,
+      "Locations": "Castro St between 17th & 18th",
+      "Fun_Facts": "",
+      "Director": "Andrew Haigh",
+      "Writer": "Michael Lannan",
+      "Actor_1": "Jonathan Groff",
+      "Actor_2": "Frankie Alvarez",
+      "Actor_3": "Murray Bartlett",
+      "geometry": "POINT (-122.43548 37.76086)"
+    },
+    {
+      "id": 125,
+      "Title
+... [truncated, 4630 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films directed by andrew haigh or written by kay cannon ──
+        director_str = gdf_copy['Director'].astype(str)
+        director_valid = (
+            gdf_copy['Director'].notna() &
+            director_str.str.strip().ne('') &
+            ~director_str.str.lower().isin(['none', 'nan', 'null'])
+        )
+        mask_director = director_valid & director_str.str.contains('andrew haigh', case=False, na=False)
+
+        writer_str = gdf_copy['Writer'].astype(str)
+        writer_valid = (
+            gdf_copy['Writer'].notna() &
+            writer_str.str.strip().ne('') &
+            ~writer_str.str.lower().isin(['none', 'nan', 'null'])
+        )
+        mask_writer = writer_valid & writer_str.str.contains('kay cannon', case=False, na=False)
+
+        combined_mask = mask_director | mask_writer
+        t1_matched_rows = gdf_copy.loc[combined_mask]
+        t1_text_view = t1_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(t1_text_view)} films directed by andrew haigh or written by kay cannon.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:50:04] code_execution
+Success: True
+Summary: Found 28 filming locations for films titled "time after time" or filmed at "pier 43".
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 48,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Merchant Exchange (465 California St at Leidesdorff)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.40213 37.79256)"
+    },
+    {
+      "id": 87,
+      "Title": "San Andreas",
+      "Year": 2015,
+      "Locations": "Pier 43",
+      "Fun_Facts": "Bystanders watch as a tsunami crashes over them",
+      "Director": "Brad Peyton",
+      "Writer": "Allan Loeb",
+      "Actor_1": "Dwayne Johnson",
+      "Actor_2": "",
+      "Actor_3": "",
+      "geometry": "POINT (-122.4064 37.80175)"
+    },
+    {
+      "id": 240,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Golden Gate Park",
+      "Fun_Facts": "Golden Gate Park is similar in shape but 20% larger than New York's Central Park.",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.48088 37.77181)"
+    },
+    {
+      "id": 354,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Broadway at Osgood St (North Beach)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.40788 37.79775)"
+    },
+    {
+      "id": 367,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Intersection of Fulton & 6th St (Chinatown)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (
+... [truncated, 12323 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films called time after time or shot at pier 43 ──
+        # Predicate: (Title == 'time after time') OR (Locations contains 'pier 43')
+        
+        # Mask for Title
+        title_str = gdf_copy['Title'].astype(str)
+        mask_title = (
+            gdf_copy['Title'].notna() &
+            title_str.str.strip().ne('') &
+            ~title_str.str.lower().isin(['none', 'nan', 'null']) &
+            title_str.str.contains('time after time', case=False, na=False)
+        )
+
+        # Mask for Locations
+        mask_location = gdf_copy['Locations'].astype(str).str.contains('pier 43', case=False, na=False)
+
+        combined_mask = mask_title | mask_location
+        matched_rows = gdf_copy.loc[combined_mask]
+
+        # response_granularity: location
+        text_view = matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': matched_rows,
+            'text_view': text_view,
+            'result': {
+                'records': text_view.to_dict('records'),
+                'count': len(text_view)
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f'Found {len(text_view)} filming locations for films titled "time after time" or filmed at "pier 43".',
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f'Error processing query: {str(e)}',
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:50:35] code_execution
+Success: True
+Summary: Found 25 writers who filmed at the golden gate bridge.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "writers": [
+    "Stanley Roberts",
+    "Joe Eszterhas",
+    "John Huston",
+    "Karl Alexander",
+    "David Henry Hwang",
+    "Nimoy",
+    "The Drews",
+    "Bill Walsh",
+    "Cooper Lane",
+    "Michael Lannan",
+    "Delmer Daves & David Goodis",
+    "John Milius",
+    "Albert Brooks",
+    "Nicholas Kazan",
+    "Anne Rice",
+    "Stan Lee",
+    "George Worthing Yates",
+    "Joseph Fields",
+    "Richard Maibaum",
+    "Steve Meerson",
+    "Chip Proser",
+    "Dustin Lance Black",
+    "Jerry Siegel",
+    "Larry Ferguson",
+    "Paul Lazarus"
+  ],
+  "count": 25,
+  "records": [
+    {
+      "id": 13,
+      "Title": "The Caine Mutiny",
+      "Year": 1954,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Edward Dmytryk",
+      "Writer": "Stanley Roberts",
+      "Actor_1": "Humphrey Bogart",
+      "Actor_2": "Fred MacMurray",
+      "Actor_3": "Jose Ferrer",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 260,
+      "Title": "Jagged Edge",
+      "Year": 1985,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Richard Marquand",
+      "Writer": "Joe Eszterhas",
+      "Actor_1": "Glenn Close",
+      "Actor_2": "Jeff Bridges",
+      "Actor_3": "Peter Coyote",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 377,
+      "Title": "The Maltese Falcon",
+      "Year": 1941,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "John Huston",
+      "Writer": "John Huston",
+      "Actor_1": "Humphrey Bogart",
+      "Actor_2": "Mary Astor",
+      "Actor_
+... [truncated, 13733 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve writers at golden gate bridge ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('golden gate bridge', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        
+        # response_granularity is 'location', so keep all rows as-is
+        t1_text_view = t1_matched_rows
+
+        # Extract unique writers for the result payload
+        unique_writers = clean_column_data(t1_matched_rows['Writer']).unique().tolist()
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'writers': unique_writers,
+                'count': len(unique_writers),
+                'records': t1_text_view.to_dict('records')
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(unique_writers)} writers who filmed at the golden gate bridge.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:51:07] code_execution
+Success: True
+Summary: Found 3 actors who filmed at the Port of San Francisco in 1985.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "actors": [
+    "Christopher Walken",
+    "Roger Moore",
+    "Tanya Roberts"
+  ],
+  "count": 3
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve actors at port of san francisco in 1985 ──
+        mask_location = gdf_copy['Locations'].astype(str).str.contains('port of san francisco', case=False, na=False)
+        year_numeric = pd.to_numeric(gdf_copy['Year'], errors='coerce')
+        mask_year = (year_numeric == 1985)
+        
+        combined_mask = mask_location & mask_year
+        t1_matched_rows = gdf_copy.loc[combined_mask]
+        
+        # Granularity is location, so keep all rows as-is
+        t1_text_view = t1_matched_rows
+
+        # Extract unique actors from the matched rows
+        actor_cols = ['Actor_1', 'Actor_2', 'Actor_3']
+        actors = pd.concat([t1_matched_rows[col] for col in actor_cols])
+        unique_actors = clean_column_data(actors).unique().tolist()
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'actors': sorted(unique_actors),
+                'count': len(unique_actors)
+            }
+        }
+
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(unique_actors)} actors who filmed at the Port of San Francisco in 1985.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:51:37] code_execution
+Success: True
+Summary: Found 1 filming location(s) for 'The OA Part II' at Pier 43.
+Metadata: {'query_type': 'retrieve', 'task_count': 1, 'task_ids': ['t1']}
+
+--- Result data ---
+{
+  "records": [
+    {
+      "id": 904,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "Pier 43",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.4064 37.80175)"
+    }
+  ],
+  "count": 1
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve filming locations for the oa part ii at pier 43 ──
+        # Predicate: Title contains 'the oa part ii' AND Locations contains 'pier 43'
+        
+        # Fully guarded mask for Title
+        title_str = gdf_copy['Title'].astype(str)
+        mask_title = (
+            gdf_copy['Title'].notna() &
+            title_str.str.strip().ne('') &
+            ~title_str.str.lower().isin(['none', 'nan', 'null']) &
+            title_str.str.contains('the oa part ii', case=False, na=False)
+        )
+
+        # Short form mask for Locations
+        mask_location = gdf_copy['Locations'].astype(str).str.contains('pier 43', case=False, na=False)
+
+        combined_mask = mask_title & mask_location
+        matched_rows = gdf_copy.loc[combined_mask]
+
+        # response_granularity: location (keep rows as-is)
+        text_view = matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': matched_rows,
+            'text_view': text_view,
+            'result': {
+                'records': text_view.to_dict('records'),
+                'count': len(text_view),
+            }
+        }
+
+        # ── Assemble final result ──
+        result = {
+            'data': task_results['t1']['result'],
+            'summary': f"Found {len(text_view)} filming location(s) for 'The OA Part II' at Pier 43.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 1,
+                'task_ids': ['t1'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-26 07:58:28] code_execution
+Success: True
+Summary: Found 27 filming locations at the Golden Gate Bridge.
+Metadata: {'query_type': 'retrieve_and_count', 'task_count': 2, 'task_ids': ['t1', 't2']}
+
+--- Result data ---
+{
+  "count": 27,
+  "count_basis": "locations"
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films at golden gate bridge ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('golden gate bridge', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Task t2: count how many are there ──
+        t2_matched_rows = task_results['t1']['matched_rows']
+        t2_count = len(t2_matched_rows)
+
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': None,
+            'result': {
+                'count': t2_count,
+                'count_basis': 'locations'
+            }
+        }
+
+        result = {
+            'data': task_results['t2']['result'],
+            'summary': f'Found {t2_count} filming locations at the Golden Gate Bridge.',
+            'metadata': {
+                'query_type': 'retrieve_and_count',
+                'task_count': 2,
+                'task_ids': ['t1', 't2']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f'Error processing query: {str(e)}',
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 07:59:03] code_execution
+Success: True
+Summary: Found 23 filming locations for 'The OA Part II'.
+Metadata: {'query_type': 'retrieve_and_count', 'task_count': 2, 'task_ids': ['t1', 't2']}
+
+--- Result data ---
+{
+  "locations": [
+    {
+      "id": 22,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "Waverly Pl btwn Washington and Clay St",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.40681 37.79421)"
+    },
+    {
+      "id": 37,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "1101 Green St",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.41739 37.79823)"
+    },
+    {
+      "id": 238,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "Red's Java House (Pier 30-32, The Embarcadero)",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.3931 37.79392)"
+    },
+    {
+      "id": 268,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "Duncan St at Diamond Heights",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.4434 37.74652)"
+    },
+    {
+      "id": 392,
+      "Title": "The OA Part II",
+      "Year": 2019,
+      "Locations": "Fairmont Hotel (950 Mason St, Nob Hill)",
+      "Fun_Facts": "",
+      "Director": "Zal Batmanglij",
+      "Writer": "Zal Batmanglij, Brit Marling",
+      "Actor_1": "Brit Marling",
+      "Actor_2": "Emory Cohen",
+      "Actor_3": "Patrick Gibson",
+      "geometry": "POINT (-122.41009 37.79242)"
+    },
+    {
+      "id"
+... [truncated, 8927 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve ────────────────────────────────────────────
+        title_str = gdf_copy['Title'].astype(str)
+        mask_t1 = (
+            gdf_copy['Title'].notna() &
+            title_str.str.strip().ne('') &
+            ~title_str.str.lower().isin(['none', 'nan', 'null']) &
+            title_str.str.contains('the oa part ii', case=False, na=False)
+        )
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view),
+            }
+        }
+
+        # ── Task t2: count ──────────────────────────────────────────────
+        t2_matched_rows = task_results['t1']['matched_rows']
+        t2_count = len(t2_matched_rows)
+
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': None,
+            'result': {
+                'count': t2_count,
+                'count_basis': 'locations',
+            }
+        }
+
+        # ── Assemble final result ───────────────────────────────────────
+        result = {
+            'data': {
+                'locations': task_results['t1']['result']['records'],
+                'location_count': task_results['t2']['result']['count']
+            },
+            'summary': f"Found {task_results['t2']['result']['count']} filming locations for 'The OA Part II'.",
+            'metadata': {
+                'query_type': 'retrieve_and_count',
+                'task_count': 2,
+                'task_ids': ['t1', 't2'],
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+        }
+========================================================================
+
+[2026-04-26 07:59:36] code_execution
+Success: True
+Summary: Found 2 films directed by nicholas meyer filmed at golden gate bridge.
+Metadata: {'query_type': 'retrieve', 'task_count': 2, 'task_ids': ['t1', 't2']}
+
+--- Result data ---
+[
+  {
+    "id": 404,
+    "Title": "Time After Time",
+    "Year": 1979,
+    "Locations": "Golden Gate Bridge",
+    "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+    "Director": "Nicholas Meyer",
+    "Writer": "Karl Alexander",
+    "Actor_1": "Malcolm McDowell",
+    "Actor_2": "Mary Steenburgen",
+    "Actor_3": "David Warner",
+    "geometry": "POINT (-122.47846 37.8183)"
+  },
+  {
+    "id": 445,
+    "Title": "Star Trek VI: The Undiscovered Country",
+    "Year": 1991,
+    "Locations": "Golden Gate Bridge",
+    "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+    "Director": "Nicholas Meyer",
+    "Writer": "Nimoy",
+    "Actor_1": "William Shatner",
+    "Actor_2": "Leonard Nimoy",
+    "Actor_3": "George Takei",
+    "geometry": "POINT (-122.47846 37.8183)"
+  }
+]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films at golden gate bridge ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('golden gate bridge', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Task t2: directed by nicholas meyer (depends on t1) ──
+        parent_rows = task_results['t1']['matched_rows']
+        director_str = parent_rows['Director'].astype(str)
+        mask_t2 = (
+            parent_rows['Director'].notna() &
+            director_str.str.strip().ne('') &
+            ~director_str.str.lower().isin(['none', 'nan', 'null']) &
+            director_str.str.contains('nicholas meyer', case=False, na=False)
+        )
+        t2_matched_rows = parent_rows.loc[mask_t2]
+        t2_text_view = t2_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': t2_text_view,
+            'result': {
+                'records': t2_text_view.to_dict('records'),
+                'count': len(t2_text_view)
+            }
+        }
+
+        result = {
+            'data': task_results['t2']['result']['records'],
+            'summary': f"Found {len(task_results['t2']['text_view'])} films directed by nicholas meyer filmed at golden gate bridge.",
+            'metadata': {
+                'query_type': 'retrieve',
+                'task_count': 2,
+                'task_ids': ['t1', 't2']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 08:00:08] code_execution
+Success: True
+Summary: Found 27 locations at the Golden Gate Bridge. The top directors for these films are: Nicholas Meyer, Robert Stevenson, Edward Dmytryk.
+Metadata: {'query_type': 'retrieve_and_rank', 'task_count': 2, 'task_ids': ['t1', 't2']}
+
+--- Result data ---
+{
+  "locations": [
+    {
+      "id": 13,
+      "Title": "The Caine Mutiny",
+      "Year": 1954,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Edward Dmytryk",
+      "Writer": "Stanley Roberts",
+      "Actor_1": "Humphrey Bogart",
+      "Actor_2": "Fred MacMurray",
+      "Actor_3": "Jose Ferrer",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 260,
+      "Title": "Jagged Edge",
+      "Year": 1985,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Richard Marquand",
+      "Writer": "Joe Eszterhas",
+      "Actor_1": "Glenn Close",
+      "Actor_2": "Jeff Bridges",
+      "Actor_3": "Peter Coyote",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 377,
+      "Title": "The Maltese Falcon",
+      "Year": 1941,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "John Huston",
+      "Writer": "John Huston",
+      "Actor_1": "Humphrey Bogart",
+      "Actor_2": "Mary Astor",
+      "Actor_3": "Gladys George",
+      "geometry": "POINT (-122.47846 37.8183)"
+    },
+    {
+      "id": 404,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.4784
+... [truncated, 13435 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve films at golden gate bridge ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('golden gate bridge', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Task t2: rank directors ──
+        t2_matched_rows = task_results['t1']['matched_rows']
+        film_df = t2_matched_rows.drop_duplicates(subset=['Title', 'Year'], keep='first')
+        
+        director_counts = clean_column_data(film_df['Director']).value_counts()
+        top_directors = director_counts.head(10)
+
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': None,
+            'result': {
+                'ranking': top_directors.to_dict(),
+                'rank_dimension': 'directors',
+                'rank_basis': 'films',
+                'N': 10
+            }
+        }
+
+        result = {
+            'data': {
+                'locations': task_results['t1']['result']['records'],
+                'top_directors': task_results['t2']['result']['ranking']
+            },
+            'summary': f"Found {len(t1_matched_rows)} locations at the Golden Gate Bridge. The top directors for these films are: {', '.join(top_directors.index[:3])}.",
+            'metadata': {
+                'query_type': 'retrieve_and_rank',
+                'task_count': 2,
+                'task_ids': ['t1', 't2']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 08:00:39] code_execution
+Success: True
+Summary: Compared films at Golden Gate Bridge (27) and Port of San Francisco (1).
+Metadata: {'query_type': 'compare', 'task_count': 3, 'task_ids': ['t1', 't2', 't3']}
+
+--- Result data ---
+{
+  "golden_gate_bridge_only": [
+    "Flower Drum Song",
+    "The Core",
+    "Dark Passage",
+    "The Caine Mutiny",
+    "Time After Time",
+    "Hulk",
+    "Jagged Edge",
+    "Superman",
+    "Golden Gate",
+    "Mother",
+    "Looking",
+    "Interview With The Vampire",
+    "The Presidio",
+    "Star Trek IV: The Voyage Home",
+    "The Love Bug",
+    "Milk",
+    "Boys and Girls",
+    "Innerspace",
+    "Star Trek VI: The Undiscovered Country",
+    "Seven Girlfriends",
+    "Bicentennial Man",
+    "It Came From Beneath the Sea",
+    "The Bridge",
+    "Magnum Force",
+    "Herbie Rides Again",
+    "The Maltese Falcon"
+  ],
+  "port_of_sf_only": [],
+  "both": [
+    "A View to a Kill"
+  ],
+  "total_unique_films": 27
+}
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: films shot at golden gate bridge ──
+        mask_t1 = gdf_copy['Locations'].astype(str).str.contains('golden gate bridge', case=False, na=False)
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_matched_rows,
+            'result': {'records': t1_matched_rows.to_dict('records'), 'count': len(t1_matched_rows)}
+        }
+
+        # ── Task t2: films shot at port of san francisco ──
+        mask_t2 = gdf_copy['Locations'].astype(str).str.contains('port of san francisco', case=False, na=False)
+        t2_matched_rows = gdf_copy.loc[mask_t2]
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': t2_matched_rows,
+            'result': {'records': t2_matched_rows.to_dict('records'), 'count': len(t2_matched_rows)}
+        }
+
+        # ── Task t3: compare them ──
+        t1_films = set(task_results['t1']['matched_rows']['Title'].unique())
+        t2_films = set(task_results['t2']['matched_rows']['Title'].unique())
+        
+        comparison = {
+            'golden_gate_bridge_only': list(t1_films - t2_films),
+            'port_of_sf_only': list(t2_films - t1_films),
+            'both': list(t1_films & t2_films),
+            'total_unique_films': len(t1_films | t2_films)
+        }
+
+        task_results['t3'] = {
+            'matched_rows': pd.concat([task_results['t1']['matched_rows'], task_results['t2']['matched_rows']]).drop_duplicates(),
+            'text_view': None,
+            'result': comparison
+        }
+
+        result = {
+            'data': task_results['t3']['result'],
+            'summary': f"Compared films at Golden Gate Bridge ({len(t1_films)}) and Port of San Francisco ({len(t2_films)}).",
+            'metadata': {
+                'query_type': 'compare',
+                'task_count': 3,
+                'task_ids': ['t1', 't2', 't3']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
+[2026-04-26 08:01:13] code_execution
+Success: True
+Summary: Found 24 filming locations for 'time after time', representing 1 film(s).
+Metadata: {'query_type': 'retrieve_and_count', 'task_count': 2, 'task_ids': ['t1', 't2']}
+
+--- Result data ---
+{
+  "locations": [
+    {
+      "id": 48,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Merchant Exchange (465 California St at Leidesdorff)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.40213 37.79256)"
+    },
+    {
+      "id": 240,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Golden Gate Park",
+      "Fun_Facts": "Golden Gate Park is similar in shape but 20% larger than New York's Central Park.",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.48088 37.77181)"
+    },
+    {
+      "id": 354,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Broadway at Osgood St (North Beach)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.40788 37.79775)"
+    },
+    {
+      "id": 367,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Intersection of Fulton & 6th St (Chinatown)",
+      "Fun_Facts": "",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Alexander",
+      "Actor_1": "Malcolm McDowell",
+      "Actor_2": "Mary Steenburgen",
+      "Actor_3": "David Warner",
+      "geometry": "POINT (-122.46376 37.77361)"
+    },
+    {
+      "id": 404,
+      "Title": "Time After Time",
+      "Year": 1979,
+      "Locations": "Golden Gate Bridge",
+      "Fun_Facts": "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge was the world's longest span when it opened in 1937.",
+      "Director": "Nicholas Meyer",
+      "Writer": "Karl Al
+... [truncated, 10864 chars total]
+
+--- Generated code ---
+def process_sf_film_query(gdf):
+    import pandas as pd
+    import numpy as np
+    import geopandas as gpd
+
+    def clean_column_data(series):
+        stringified = series.astype(str)
+        exclude = (
+            series.isna() |
+            (stringified.str.strip() == '') |
+            (stringified.str.lower().isin(['none', 'nan', 'null']))
+        )
+        return series[~exclude]
+
+    try:
+        gdf_copy = gdf.copy()
+        task_results = {}
+
+        # ── Task t1: retrieve filming locations for time after time ──
+        title_str = gdf_copy['Title'].astype(str)
+        mask_t1 = (
+            gdf_copy['Title'].notna() &
+            title_str.str.strip().ne('') &
+            ~title_str.str.lower().isin(['none', 'nan', 'null']) &
+            title_str.str.contains('time after time', case=False, na=False)
+        )
+        t1_matched_rows = gdf_copy.loc[mask_t1]
+        t1_text_view = t1_matched_rows
+
+        task_results['t1'] = {
+            'matched_rows': t1_matched_rows,
+            'text_view': t1_text_view,
+            'result': {
+                'records': t1_text_view.to_dict('records'),
+                'count': len(t1_text_view)
+            }
+        }
+
+        # ── Task t2: count how many films are represented there ──
+        t2_matched_rows = task_results['t1']['matched_rows']
+        t2_film_view = t2_matched_rows.drop_duplicates(subset=['Title', 'Year'])
+        t2_count = len(t2_film_view)
+
+        task_results['t2'] = {
+            'matched_rows': t2_matched_rows,
+            'text_view': None,
+            'result': {
+                'count': t2_count,
+                'count_basis': 'films'
+            }
+        }
+
+        result = {
+            'data': {
+                'locations': task_results['t1']['result']['records'],
+                'film_count': task_results['t2']['result']['count']
+            },
+            'summary': f"Found {len(task_results['t1']['matched_rows'])} filming locations for 'time after time', representing {t2_count} film(s).",
+            'metadata': {
+                'query_type': 'retrieve_and_count',
+                'task_count': 2,
+                'task_ids': ['t1', 't2']
+            }
+        }
+        return result
+
+    except Exception as e:
+        return {
+            'data': None,
+            'summary': f"Error processing query: {str(e)}",
+            'metadata': {'error': str(e), 'error_type': type(e).__name__}
+        }
+========================================================================
+
