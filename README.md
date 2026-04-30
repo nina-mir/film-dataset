@@ -6,17 +6,17 @@
 A chatbot that allows interaction with a publicly available dataset of film/TV projects filmed in San Francisco city over the past 100 years. 
 The augmented dataset is publicly available on SFgov.data as a CSV file. 
 
-### Backstory: The idea for this project began as a motivation for me to learn RAG but soon, it turned out RAG is not capable of delivering accurate results for this dataset. Therefore, an idea of a proto agent came about. This data pipeline is, indeed, a custom, basic agent that is capable to conerting single-task user queries to accurate python code to be used agains the GeoPandasDataFrame dataset. 
+## Backstory 
+The idea for this project began as a motivation for me to learn RAG but soon, it turned out RAG is not capable of delivering accurate results for this dataset. Therefore, an idea of a proto agent came about. This data pipeline is, indeed, a custom, basic agent that is capable to conerting single-task user queries to accurate python code to be used agains the GeoPandasDataFrame dataset. 
 
 **Current Focus:** Improving the resulting code for multi-intent user queries. 
 
 **Keywords**: _agentic datapipeline, films, history, San Francisco_
 
-### Data
-
-#### Current Data Stats
-======================================================================
-======================================================================
+## Data
+### April-2026 update
+#### Current Data Stats 
+```python
 Final shape:        (2208, 14)
 CRS:                EPSG:4326
 Geometry null:      86
@@ -67,9 +67,8 @@ Sample row (with geometry):
   Neighborhood: Lincoln Park
   Supervisor_District: 1
   geometry: POINT (-122.4962354 37.7857806)
-======================================================================
-======================================================================
-
+```
+### 2024 update
 #### original data
 
 The dataset for this project can be previewed [on SF government website.](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am/data_preview).
