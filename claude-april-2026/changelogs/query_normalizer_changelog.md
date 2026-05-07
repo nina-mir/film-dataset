@@ -3,6 +3,72 @@
 Running changelog of normalizer fixes since the original April 7 implementation. Reverse-chronological by date.
 
 ---
+## May 6, 2026 — N-1: Phrase pre-pass + street-context pre-pass for Locations
+
+Implemented the long-standing N-1 open item from the April 26 phase-3 work, with substantive design changes from the original spec after diagnostic work on the new (post-swap) Locations data.
+
+### Origin
+
+Phase C (April 24, dataset swap) revealed that T15 and T18 regressed against the new gpkg. The query `films on larkin street` resolved to `films on alan arkin st`: the cluster extractor stripped `street` (DOMAIN_WORDS), produced a bare `larkin` single-word cluster, and the fuzzy matcher accepted `larkin` ≈ `arkin` at ratio ~0.83 against Actor at the 0.75 cutoff.
+
+The April 26 open-items doc proposed N-1 as a phrase pre-pass: scan 2–4-grams against known multi-word `Locations` values before cluster extraction, lock matched spans against fuzzy correction.
+
+### Design change after diagnostic work
+
+Initial implementation followed the spec literally — exact-canonical and near-exact (≥0.95) matching of query n-grams against full Locations values. Diagnostic on the new data revealed the spec's core assumption was wrong for street references:
+
+```
+known_values['Locations'] containing "larkin":
+'724 Larkin St', '945 Larkin St', '2632 Larkin St at Lombard',
+'Bay St between Larkin and Hyde', 'California at Larkin',
+'Larkin between Beach and Bay', 'The Magazine at 920 Larkin',
+... (34 rows total, none of which are 'Larkin St' as a clean phrase)
+```
+
+Streets in this dataset are stored as embedded fragments inside free-text descriptions (`724 Larkin St`, `California at Larkin`, `Larkin & Hyde St`), not as standalone canonical values. A 2-gram phrase pre-pass for `larkin st` finds no full-string match because the index has no `larkin st` entry — only `724 larkin st`, `945 larkin st`, etc. Spec-compliant N-1 would not have fixed the originating bug.
+
+Landmarks, in contrast, *do* appear as clean values:
+'Coit Tower', 'Golden Gate Bridge', 'Port of San Francisco', 'Union Square'
+
+So the data is bimodal: phrase pre-pass works for landmarks; streets need a different mechanism.
+
+### What was implemented
+
+Two complementary subpasses, both run before cluster extraction, both populating a shared `protected` index set passed to a modified `extract_content_clusters(words, protected_indices=...)`.
+
+**Subpass 1 — `phrase_prepass`** (landmarks). Scans 2-, 3-, 4-grams in the query against an index of `Locations` values that are themselves ≥2 words, suffix-canonicalized at index build time. Exact-canonical fast path before `difflib.get_close_matches` at cutoff 0.95. Longest-match-wins, left-to-right, non-overlapping. Same-length matches only (length-changing matches fail at 0.95 cutoff anyway). On match: substitute canonical form if different from input, lock span. Logs `source: 'phrase_prepass'` (rewrite) or `source: 'phrase_prepass_exact'` (no rewrite, span-locked only — added during testing for observability).
+
+**Subpass 2 — `street_context_prepass`** (streets). Walks single tokens. If a token appears in an extracted street-token vocabulary AND is immediately followed by a street-suffix word (`street`/`st`/`avenue`/`ave`/`boulevard`/`blvd`/...), lock the token+suffix span. No substitution — original tokens preserved for downstream suffix canonicalization and predicate-level substring matching. Logs `source: 'span_lock'`. v1 fires only on the suffix-immediately-following rule; preposition (`on larkin`), cross-street (`larkin and hyde`), and ampersand (`larkin & hyde`) contexts deferred to C-1.
+
+Street-token vocabulary built once at known-values build time by regex extraction over `Locations` free-text: tokens immediately preceding a street-suffix word, with `STOP_WORDS`/`DOMAIN_WORDS`/numeric tokens/length-≤2 tokens filtered out. Resulting set: 319 tokens.
+
+### Index sizes against new gpkg
+
+Phrase index: {2: 140, 3: 352, 4: 254}
+Street tokens: 319
+
+### Validation results
+
+Layer 1 (index sanity, 6 asserts): pass.
+
+Layer 2 (originating bug + 6 landmark/street queries): all 7 normalize correctly.
+- `films on larkin street` → `films on larkin st` with `span_lock`. Originating bug fixed.
+- `films on geary street`, `films on hyde street` — same pattern, span-locked.
+- `coit tower`, `golden gate bridge`, `port of san francisco`, `union square` — all phrase-pre-pass-locked. Diagnostic confirmed `protected = {2,3}` or `{2,3,4}` and `clusters = []` (cluster extractor sees nothing).
+
+Layer 3 (regression sweep, 9 queries): 8 of 9 unaffected. One catastrophic pre-existing bug surfaced (see "Bug discovered during validation" below).
+
+### Files changed
+
+- `pipeline_e2e_testing_post_llm_resiliency_dataset_swap.ipynb`:
+  - Added new cell after `fuzzy_match_cluster` containing `_build_phrase_prepass_index`, `_build_street_token_index`, `phrase_prepass`, `street_context_prepass`, plus index-build trailer.
+  - Modified `extract_content_clusters` to accept `protected_indices=None` parameter.
+  - Modified `normalize_query` to call both subpasses before cluster extraction; merged corrections lists; added `source: 'fuzzy_cluster'` tag to the existing cluster-correction dict for uniform observability.
+
+### Severity
+
+Real fix, not patch. The cluster extractor never sees protected spans as free-floating content tokens, so the bug class (street/landmark phrases hijacked by person/title fuzzy matching) is structurally prevented for the cases the two subpasses cover. Bare-token street references without suffix (`films on larkin`) are not yet covered — deferred to C-1.
+
 
 ## April 26, 2026 — Three fixes surfaced by Phase 3 e2e tests
 

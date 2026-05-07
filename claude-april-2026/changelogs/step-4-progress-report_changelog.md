@@ -224,3 +224,45 @@ The prompt goes into `instructions/filter_extractor.md` and gets loaded by `Syst
 **Motivation**
 
 T16 ("films with no listed director") previously worked only because Step 6 was generous with a malformed `{op: "==", value: null}` leaf. Step 4 now emits a well-formed unary predicate and the validator enforces the shape.
+
+Here's the changelog entry. Drop-in ready — adjust the date format and version bump if your existing changelog uses different conventions.
+
+---
+
+## [Phase B] — 2026-04-29
+
+### v1.2
+
+### Schema documentation update for 2026 dataset swap
+
+Updated the shared schema reference in the Step 4 (Filter Extractor) prompt to reflect the new canonical dataset (`sf_film_2026_04_24_data.gpkg`, 2,208 rows × 14 columns). Documentation-only change — no behavioral change to filter extraction in this phase. Note: Step 6 (Code Generator) reads the same schema string, so this edit applies to both steps.
+
+### Changed
+
+- **Schema column list expanded** from 10 columns to 14, adding the four new columns introduced by SFgov's December 2024 dataset update and surfaced in the April 2026 conversion: `Production_Company (str)`, `Distributor (str)`, `Neighborhood (str)`, `Supervisor_District (Int64)`.
+- **`Year` dtype annotation corrected** from `int64` to `Int64` (pandas nullable integer extension dtype). Reflects actual dtype after the read-time cast applied at notebook load. Same correction applied to `Supervisor_District`.
+- **Schema annotation added** clarifying that `Neighborhood` and `Supervisor_District` are documented but **not yet active filter fields** in v1. Prevents the LLM from emitting predicates against them before Phase D enables them deliberately.
+- **Rule 9 (`is_null` scope) tightened** to explicitly exclude `Production_Company`, `Distributor`, `Neighborhood`, and `Supervisor_District` from null-capable fields. Necessary because the expanded schema now visibly contains additional text columns the LLM might otherwise guess could take `is_null`. v1 null-capable fields remain Director and Writer only.
+- **Rule 9 redundancy removed.** Consolidated two adjacent statements of "v1 supports Director and Writer only" into a single statement combined with the new exclusion list.
+
+### Added
+
+- **Inline comment on `VALID_FIELDS` constant** noting that `Neighborhood` and `Supervisor_District` are intentionally excluded from the active filter set until Phase D, with cross-references to `dataset_swap_2026.md` and `Post_data_swap_list_of_actions.md`. Prevents accidental "fixes" by future contributors.
+
+### Not changed (intentional, Phase B is documentation-only)
+
+- `VALID_FIELDS` runtime guard — still excludes the new columns. Phase D will revisit.
+- No few-shot examples added for `Neighborhood`. Match semantics (`==` vs `contains`) deferred to open-issues; pre-committing via a few-shot would prejudge the decision before Phase E (normalizer touches) provides the necessary signal.
+- Rules 1–12 (extraction logic) untouched.
+- Existing few-shot examples untouched.
+
+### Rationale
+
+This is Phase B of the post-dataset-swap action plan documented in `Post_data_swap_list_of_actions.md`. Phase B is intentionally scoped to schema honesty — making the prompt accurately describe the data — without enabling any new behavior. Phase C (re-run T1–T34 regression suite against the new dataset) needs the prompt's filter-emission behavior held constant to be a clean regression gate; introducing Neighborhood support now would contaminate that signal.
+
+### References
+
+- `dataset_swap_2026.md` — full record of the data swap and accepted trade-offs
+- `Post_data_swap_list_of_actions.md` — five-phase rollout plan (this entry implements Phase B)
+- `phase_3_open_items_April_26.md` — where the deferred Neighborhood match-semantics question is tracked
+

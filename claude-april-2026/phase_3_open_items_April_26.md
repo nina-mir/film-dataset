@@ -23,6 +23,8 @@ This would mean `golden gate bridge` would be recognized as a unit on first pass
 
 ### N-2: Short-cluster cutoff floor
 
+- N-2 length threshold needs revision (Larkin = 6 chars; the proposed 5-char ceiling was an undershoot).
+
 **Observation:** The original `port` → `Bud Cort` and `pier` → `Guy Pierce` corruptions were caused by short single-word content clusters fuzzy-matching against name-column values at the default 0.75 cutoff. The current Fix 1 adds these specific words to `DOMAIN_WORDS`, but the structural vulnerability remains: any 4–5 character common English noun whose suffix happens to overlap a name in the database can produce the same class of corruption. `cab` → `Cabaret`, `bay` → `Baywatch`, `rock` → `The Rock`, etc.
 
 **Suggested approach:** In `fuzzy_match_cluster`, lift the cutoff for short single-word clusters. Specifically: if `' ' not in cluster_text and len(cluster_text) <= 5`, set `cutoff = max(cutoff, 0.90)` for that match attempt. Apply the same lift to the partial-name path lower in the function.
@@ -115,6 +117,9 @@ This is acceptable for now (a fully automated semantic check is non-trivial), bu
 This would have caught all three Run 1 false successes at glance time rather than requiring careful printout reading.
 
 ---
+
+- Step 6 D5 needs an explicit "which X / who / what" output-dimension pattern to address the T26 code-gen drift class. This is independent of normalizer work and could be slotted alongside a Step 6 v2.5 revision.
+
 
 ## Summary
 
