@@ -66,3 +66,107 @@ Step 6 lacks an explicit pattern in D5 for "which X" / "who" / "what" output-dim
 
 
 ## L-1 (Locations semantics) — that tracks the question of whether substring-match should be widened to bare-token form for streets. That item gets debated separately, with its own test queries and its own decision record. It probably belongs in Phase E alongside the Neighborhood work, since both are "how should the predicate layer reason about location references" questions.
+
+## D-1: Locations dataset typo repair. Scope: the 11 obvious typos from the diagnostic, plus a manual review of Category 2/3 to identify the 5–10 streets that might be canonical-list gaps. Separate document, separate diff, separate review.
+
+## D-2: Locations data-repair workflow. Scope: a documented pattern for finding and fixing typos in Locations (and later Neighborhood). The diagnostic you just ran is half of this — finding suspect tokens by comparing derived-vs-canonical. The other half is the actual repair: how to write the corrections back into the gpkg, whether to preserve raw, whether to track provenance.
+
+## both D-1 and D-2 are based on the following conversation on May-7-2026
+
+```
+You're absolutely right, and the diagnostic is more revealing than either of us probably expected. Let me tell you what I see in this output, because it's worth being explicit before talking about repair.
+
+## Three categories in those 66 tokens
+
+**Category 1 — Misspellings in the dataset.** These are the ones you'd want to repair:
+
+- `larken` (should be `larkin`)
+- `barlett` (should be `bartlett`)
+- `buchannan` (should be `buchanan`)
+- `chestnust` (should be `chestnut`)
+- `misison` (should be `mission`)
+- `shotweel` (should be `shotwell`)
+- `sporfford` (should be `spofford`)
+- `tayor` (should be `taylor`)
+- `mccollough` (should be `mccullough`)
+- `jenning` (probably should be `jennings`)
+- `kearney` (likely should be `kearny` — SF spells it without the 'e')
+
+That's 11 confirmed-or-likely typos. The fact that the regex extracted them at all means each one appears in Locations free-text in `<token> <suffix>` form at least once — meaning real rows in your gpkg have misspelled street names embedded in their address strings. `films on bartlett street` won't match a row that says `Barlett St` because predicate substring-match is exact, not fuzzy. Real coverage holes.
+
+**Category 2 — Multi-word street fragments captured as single tokens.** These are streets the canonical list correctly stores as multi-word, but the regex pulled out only the last token:
+
+- `chavez` (from `Cesar Chavez St` → regex grabs `chavez st`, indexes `chavez`)
+- `ness` (from `Van Ness Ave` → indexes `ness`)
+- `haro` and `deharo` (from `De Haro St` → both forms extracted depending on tokenization)
+- `jacinto` (from `San Jacinto Way`)
+- `bruno` (from `San Bruno Ave`)
+- `jose` (from `San Jose Ave`)
+- `fernando` (from `San Fernando Way` or similar)
+- `kerouac` (from `Jack Kerouac Alley`)
+- `toklas` (from `Alice B Toklas Lane`)
+- `goodlett` (from `Dr Carlton B Goodlett Pl`)
+- `bayshore` (from `Bay Shore Blvd` — though canonical may store this as two words)
+- `francois` (from `St Francois Pl` or similar)
+- `germain` (from a saint-named street)
+- `hallidie` (probably `Hallidie Plaza` or similar)
+- `gavin`, `gate`, `milk`, `mays` (probably from compound names)
+
+These aren't list-coverage failures — the streets *are* in the canonical list, just as multi-word entries. The regex was just too coarse to know that.
+
+**Category 3 — Non-street artifacts.** The regex caught these because they appear before street-suffix words in Locations free-text, but they aren't street names:
+
+- `embarcadero` (it's `The Embarcadero` — the leading article makes the regex extract just `embarcadero`, but `Embarcadero` is itself the street name — so this might actually be Category 2, depending on canonical-list convention)
+- `island`, `point`, `peaks`, `view`, `heights`, `bridges`, `gate` (geographic feature words, often part of compound names)
+- `fisherman's`, `mel's` (possessive-form fragments of landmark names: `Fisherman's Wharf`, `Mel's Diner`)
+- `ferry`, `frontage`, `private`, `old`, `center`, `marathon`, `maritime`, `ramada`, `westin`, `nations`, `seventh`, `love` (compound name fragments — `Ferry Building`, `Old Mason`, `Maritime Plaza`, etc.)
+- `o'farrell` (probably `O'Farrell Street`, which IS in the canonical list — the apostrophe normalization differs between sources)
+- `adams`, `ana`, `alco`, `bannam`, `collingswood`, `conzelman`, `ferrera`, `herman`, `honda`, `louis`, `mar`, `rowland`, `shelley` (could be real streets the canonical list missed — these are worth specifically checking against the canonical source)
+
+## What this tells you about the data
+
+Two real problems, and they're separate workstreams:
+
+**Problem 1 — Dataset has misspellings** (Category 1). 11+ typos in Locations free-text. These cause real coverage holes that no amount of normalizer work will fix, because the predicate layer does exact substring matching. A user querying `bartlett` cannot hit a row stored as `Barlett`. **The fix is repair the data, not the normalizer.**
+
+**Problem 2 — Canonical list may have gaps** (parts of Category 2 and 3). Some of those tokens might be real streets the canonical source missed. Worth a manual review against your canonical source — but this is likely 5–10 streets, not 60.
+
+## What this tells you about C-1a
+
+C-1a was always going to ship with canonical-only, but the diagnostic now gives that decision additional weight. Here's why:
+
+**Your idea of unioning derived with canonical would have spread the misspellings into the protective vocabulary.** With `larken` in the unioned vocabulary, a query for `films on larken` would lock the misspelled token. Predicate substring-match would then look for `larken` in Locations and hit the misspelled rows — but miss the correctly-spelled ones. You'd be encoding the dataset's typos into the query layer, making the bug invisible to users (the query "succeeds" by hitting bad data) and harder to fix later.
+
+**Canonical-only is correct on principle, and the diagnostic confirms it.** Canonical-only keeps the typos out of the lock vocabulary. A user querying `films on bartlett` will:
+
+- Lock `bartlett` (it IS in the canonical list as the correct spelling).
+- Predicate substring-match for `bartlett` in Locations.
+- Miss the rows stored as `Barlett` (incorrect spelling), hit the rows stored as `Bartlett` (correct spelling).
+- Return fewer results than ideal — but the right rows.
+
+This is the right failure mode. The user gets a correct-but-incomplete answer, and the missing rows are diagnosable as a *data* problem, not a *normalizer* problem.
+
+## My honest take on what to do
+
+**Ship C-1a as designed (canonical-only), don't touch the dataset yet.** Reasoning:
+
+1. **C-1a is a normalizer fix; data repair is a separate workstream.** Conflating them produces a single PR that's hard to review and impossible to roll back independently. If C-1a turns out to have a bug, you don't want to revert the data fixes. If a data fix turns out to be wrong (misspelling we corrected was actually intentional, or a different city's `Barlett`), you don't want to revert C-1a.
+
+2. **The data repair is its own thinking exercise.** Eleven likely typos look obvious from the diagnostic, but each one needs a decision: is the canonical spelling the right canonical spelling? Are there multiple rows affected? Should the original be preserved in a `Locations_raw` column? Is this fix one-off or is there a broader data-cleanliness sweep needed? Worth its own document and its own diff.
+
+3. **Phase E is going to surface more of this.** When you add Neighborhood, you'll discover misspellings there too. Better to design a small data-repair workflow now and use it consistently across columns than to scramble fix Locations now and re-scramble for Neighborhood later.
+
+4. **e2e tests can run with the typos still present.** T15 and T18 don't depend on the misspelled rows specifically — they depend on the larkin-related cluster behavior, which C-1a fixes. The misspellings produce a coverage hole that affects total row counts but doesn't depend on cluster extraction or fuzzy matching.
+
+**My suggested sequencing:**
+
+1. **Apply C-1a as patched.** Run the test queries. Confirm Alan Arkin still resolves and `films on van ness`, `films on larkin`, etc. all lock correctly.
+2. **Run T15/T18.** If they pass against the new gpkg, ship N-1 + F-1a + C-1a as a coordinated bundle.
+3. **Run T1–T34.** Confirm no regressions.
+4. **Open a new item — call it D-1: Locations dataset typo repair.** Scope: the 11 obvious typos from the diagnostic, plus a manual review of Category 2/3 to identify the 5–10 streets that might be canonical-list gaps. Separate document, separate diff, separate review.
+5. **Open a related item — D-2: Locations data-repair workflow.** Scope: a documented pattern for finding and fixing typos in Locations (and later Neighborhood). The diagnostic you just ran is half of this — finding suspect tokens by comparing derived-vs-canonical. The other half is the actual repair: how to write the corrections back into the gpkg, whether to preserve raw, whether to track provenance.
+
+The diagnostic itself is now a reusable artifact. Save it somewhere. It's the kind of small tool that earns its keep every time the dataset changes.
+
+Want to proceed with C-1a now and file D-1 as a new open item, or do you want to look at the data-repair question more carefully before running the patches?
+```

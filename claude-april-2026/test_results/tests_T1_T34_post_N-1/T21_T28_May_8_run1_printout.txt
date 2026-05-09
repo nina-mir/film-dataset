@@ -1,0 +1,634 @@
+
+############################################################
+  TEST 1/8: T21: Cross-field AND (Director + location)
+  Query: films directed by nicholas meyer at golden gate bridge
+  Expected: single-task retrieve; film granularity; Director == nicholas meyer AND Locations contains golden gate bridge
+############################################################
+
+============================================================
+Query: films directed by nicholas meyer at golden gate bridge
+============================================================
+
+[Step 1] Normalized: films directed by nicholas meyer at golden gate bridge
+  Corrections: [{'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by nicholas meyer at golden gate bridge",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223724_step4_films_directed_by_nicholas_mey.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by nicholas meyer at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "nicholas meyer",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "golden gate bridge",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 657 chars
+  Prompt size: 58887 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223756_step6_films_directed_by_nicholas_mey.json
+  ✓ Code generated: 2074 chars
+  Explanation: The code filters the GeoDataFrame using a boolean mask that combines a guarded string match for the Director field (nicholas meyer) and a partial text...
+
+[Execution] ✓ Success
+  Summary: Found 2 film(s) directed by nicholas meyer featuring the golden gate bridge.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 2/8: T22: Cross-field AND (Actor + location)
+  Query: films with roger moore at port of san francisco
+  Expected: single-task retrieve; film granularity; Actor == roger moore AND Locations contains port of san francisco
+############################################################
+
+============================================================
+Query: films with roger moore at port of san francisco
+============================================================
+
+[Step 1] Normalized: films with roger moore at port of san francisco
+  Corrections: [{'matched': 'Port of San Francisco', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with roger moore at port of san francisco",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223821_step4_films_with_roger_moore_at_port.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films with roger moore at port of san francisco",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "logic": "OR",
+            "clauses": [
+              {
+                "field": "Actor_1",
+                "op": "==",
+                "value": "roger moore",
+                "type": "attribute"
+              },
+              {
+                "field": "Actor_2",
+                "op": "==",
+                "value": "roger moore",
+                "type": "attribute"
+              },
+              {
+                "field": "Actor_3",
+                "op": "==",
+                "value": "roger moore",
+                "type": "attribute"
+              }
+            ]
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "port of san francisco",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 1109 chars
+  Prompt size: 59339 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223842_step6_films_with_roger_moore_at_port.json
+  ✓ Code generated: 2179 chars
+  Explanation: The code executes a retrieve task by creating a boolean mask that combines an OR-logic search across all three actor columns for 'Roger Moore' and a p...
+
+[Execution] ✓ Success
+  Summary: Found 1 film(s) featuring Roger Moore filmed at the Port of San Francisco.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 3/8: T23: Cross-field AND (Writer + location)
+  Query: films written by linda demetrick at hyatt hotel
+  Expected: single-task retrieve; film granularity; Writer == linda demetrick AND Locations contains hyatt hotel
+############################################################
+
+============================================================
+Query: films written by linda demetrick at hyatt hotel
+============================================================
+
+[Step 1] Normalized: films written by linda demetrick at hyatt hotel
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films written by linda demetrick at hyatt hotel",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223856_step4_films_written_by_linda_demetri.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films written by linda demetrick at hyatt hotel",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Writer",
+            "op": "==",
+            "value": "linda demetrick",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "hyatt hotel",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 642 chars
+  Prompt size: 58872 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223920_step6_films_written_by_linda_demetri.json
+  ✓ Code generated: 2116 chars
+  Explanation: The function filters the GeoDataFrame by applying a guarded string match on the 'Writer' column (to handle nulls and formatting) and a partial text ma...
+
+[Execution] ✓ Success
+  Summary: Found 1 film(s) written by linda demetrick filmed at hyatt hotel.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 4/8: T24: Cross-field OR (Director OR writer)
+  Query: films directed by andrew haigh or written by kay cannon
+  Expected: single-task retrieve; film granularity; OR predicate across Director == andrew haigh and Writer == kay cannon
+############################################################
+
+============================================================
+Query: films directed by andrew haigh or written by kay cannon
+============================================================
+
+[Step 1] Normalized: films directed by andrew haigh or written by kay cannon
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by andrew haigh or written by kay cannon",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_223950_step4_films_directed_by_andrew_haigh.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films directed by andrew haigh or written by kay cannon",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "OR",
+        "clauses": [
+          {
+            "field": "Director",
+            "op": "==",
+            "value": "andrew haigh",
+            "type": "attribute"
+          },
+          {
+            "field": "Writer",
+            "op": "==",
+            "value": "kay cannon",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 638 chars
+  Prompt size: 58868 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224011_step6_films_directed_by_andrew_haigh.json
+  ✓ Code generated: 2307 chars
+  Explanation: The function processes the query by creating boolean masks for the 'Director' and 'Writer' columns using the fully guarded string matching pattern (ch...
+
+[Execution] ✓ Success
+  Summary: Found 12 films directed by andrew haigh or written by kay cannon.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 5/8: T25: Cross-field OR (Title OR location)
+  Query: films called time after time or shot at pier 43
+  Expected: single-task retrieve; film granularity; OR predicate across Title contains time after time and Locations contains pier 43
+############################################################
+
+============================================================
+Query: films called time after time or shot at pier 43
+============================================================
+
+[Step 1] Normalized: films called time after time or filmed at pier 43
+  Corrections: [{'matched': 'Pier 43', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films called time after time or filmed at pier 43",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224028_step4_films_called_time_after_time_o.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films called time after time or filmed at pier 43",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "OR",
+        "clauses": [
+          {
+            "field": "Title",
+            "op": "==",
+            "value": "time after time",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "pier 43",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 642 chars
+  Prompt size: 58872 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224050_step6_films_called_time_after_time_o.json
+  ✓ Code generated: 2215 chars
+  Explanation: The function processes the query by creating two boolean masks: one for the film title 'time after time' (using guarded string matching) and one for t...
+
+[Execution] ✓ Success
+  Summary: Found 28 filming locations for 'time after time' or at 'pier 43'.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 6/8: T26: Constraint vs output dimension (writers at location)
+  Query: which writers filmed at golden gate bridge
+  Expected: single-task retrieve; writer is output dimension, not filter; predicate should be Locations contains golden gate bridge only
+############################################################
+
+============================================================
+Query: which writers filmed at golden gate bridge
+============================================================
+
+[Step 1] Normalized: which writers filmed at golden gate bridge
+  Corrections: [{'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "which writers filmed at golden gate bridge",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224106_step4_which_writers_filmed_at_golden.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "which writers filmed at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "golden gate bridge",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 401 chars
+  Prompt size: 58631 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224130_step6_which_writers_filmed_at_golden.json
+  ✓ Code generated: 1710 chars
+  Explanation: The function filters the GeoDataFrame for rows where the 'Locations' column contains 'golden gate bridge'. It then returns the matching records, inclu...
+
+[Execution] ✓ Success
+  Summary: Found 27 filming locations at the Golden Gate Bridge.
+  Data: [{'Title': 'Star Trek VI: The Undiscovered Country', 'Writer': 'Nimoy', 'Locations': 'Golden Gate Bridge'}, {'Title': 'Superman', 'Writer': 'Jerry Siegel', 'Locations': 'Golden Gate Bridge'}, {'Title'
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 7/8: T27: Constraint vs output dimension (actors at location and year)
+  Query: which actors filmed at port of san francisco in 1985
+  Expected: single-task retrieve; actor is output dimension, not filter; predicate should be Locations contains port of san francisco AND Year == 1985
+############################################################
+
+============================================================
+Query: which actors filmed at port of san francisco in 1985
+============================================================
+
+[Step 1] Normalized: which actors filmed at port of san francisco in 1985
+  Corrections: [{'matched': 'Port of San Francisco', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "which actors filmed at port of san francisco in 1985",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224153_step4_which_actors_filmed_at_port_of.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "which actors filmed at port of san francisco in 1985",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "port of san francisco",
+            "type": "attribute"
+          },
+          {
+            "field": "Year",
+            "op": "==",
+            "value": 1985,
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 646 chars
+  Prompt size: 58876 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224227_step6_which_actors_filmed_at_port_of.json
+  ✓ Code generated: 2098 chars
+  Explanation: The code filters the GeoDataFrame for rows where the 'Locations' column contains 'port of san francisco' and the 'Year' column is 1985. It then extrac...
+
+[Execution] ✓ Success
+  Summary: Found 3 actors who filmed at the Port of San Francisco in 1985.
+  Data keys: ['actors', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 8/8: T28: Cross-field AND (Title + location)
+  Query: show filming locations for the oa part ii at pier 43
+  Expected: single-task retrieve; location granularity; Title contains the oa part ii AND Locations contains pier 43
+############################################################
+
+============================================================
+Query: show filming locations for the oa part ii at pier 43
+============================================================
+
+[Step 1] Normalized: show filming locations for the oa part ii at pier 43
+  Corrections: [{'matched': 'Pier 43', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for the oa part ii at pier 43",
+      "dependsOn": []
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224252_step4_show_filming_locations_for_the.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "show filming locations for the oa part ii at pier 43",
+      "dependsOn": [],
+      "predicate": {
+        "logic": "AND",
+        "clauses": [
+          {
+            "field": "Title",
+            "op": "contains",
+            "value": "the oa part ii",
+            "type": "attribute"
+          },
+          {
+            "field": "Locations",
+            "op": "contains",
+            "value": "pier 43",
+            "type": "attribute"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 651 chars
+  Prompt size: 58881 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_224322_step6_show_filming_locations_for_the.json
+  ✓ Code generated: 1928 chars
+  Explanation: The function filters the GeoDataFrame using a combined boolean mask for the Title and Locations columns. It uses the fully guarded string matching pat...
+
+[Execution] ✓ Success
+  Summary: Found 1 filming location(s) for 'The OA Part II' at Pier 43.
+  Data keys: ['records', 'count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+
+============================================================
+TEST SUITE SUMMARY
+============================================================
+  Passed: 8/8
+  Failed: 0/8
+
+  ✓ T21: Cross-field AND (Director + location)
+  ✓ T22: Cross-field AND (Actor + location)
+  ✓ T23: Cross-field AND (Writer + location)
+  ✓ T24: Cross-field OR (Director OR writer)
+  ✓ T25: Cross-field OR (Title OR location)
+  ✓ T26: Constraint vs output dimension (writers at location)
+  ✓ T27: Constraint vs output dimension (actors at location and year)
+  ✓ T28: Cross-field AND (Title + location)

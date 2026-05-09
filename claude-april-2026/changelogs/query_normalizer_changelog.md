@@ -1,6 +1,177 @@
 # Query Normalizer — Changelog
 
+
+
+
+
+
+
 Running changelog of normalizer fixes since the original April 7 implementation. Reverse-chronological by date.
+
+
+# Normalizer Changelog — F-1a (revised) + C-1a — May 7, 2026
+
+Append both entries to `query_normalizer_changelog_April_26.md` in reverse-chronological order (newest at top).
+
+---
+
+## May 7, 2026 — C-1a: Canonical SF streets vocabulary + preposition trigger
+
+Promoted bare-token street query handling from "deferred" to "shipped before e2e" after diagnostic work showed `films on larkin`, `films on market`, and `films on polk` are normal user phrasing rather than edge cases.
+
+### Origin
+
+N-1 (May 6) shipped a street-context pre-pass with a single trigger: `<street-token> <street-suffix>`. That handles `films on larkin street` but leaves `films on larkin` (no explicit suffix) broken — `larkin` falls through to fuzzy matching against Actor at the partial-name path and resolves to `Alan Arkin`.
+
+The original deferral logic was that bare-token street queries needed cross-street/preposition context inference, which was too speculative without data on real query shapes. Reviewer feedback and direct user confirmation that `films on <street>` is normal phrasing reversed that judgment.
+
+### Design changes from the deferred C-1 spec
+
+**1. Vocabulary source changed from regex extraction to canonical SF streets list.**
+
+The N-1 implementation built `street_token_index` by scanning Locations free-text with a regex (`<token> <street-suffix>`). That produced 319 tokens — incidental coverage tied to dataset shape. Replaced with a canonical SF streets list (`sf_street_names.txt`, 2,459 entries: 2,052 single-token + 407 multi-token) loaded via CSV reader.
+
+Rationale: the canonical list is authoritative, dataset-shape-independent, and includes streets that never appear in `<token> <suffix>` form anywhere in Locations free-text (cross-street-only references, address-prefix references, etc.).
+
+**2. Vocabulary structure changed from `set[str]` to `dict[int, set[str]]`.**
+
+Single-token-only vocabulary cannot match multi-word street names (`van ness`, `cesar chavez`, `south van ness`, `martin luther king jr`). Restructured as an n-gram index keyed by word count over `STREET_NAME_NGRAM_RANGE = (1, 4)`. Entries with word count >4 are dropped — the canonical list contains 3 entries with 5+ words, all freeway-ramp metadata (`HWY 1 TO HWY 101 SOUTHBOUND`) that no user query will reference.
+
+**3. Second trigger added: `<location-preposition> <street-name n-gram>`.**
+
+Existing N-1 trigger `(a)` `<street-name n-gram> <street-suffix>` retained.
+
+New trigger `(b)` fires when `words[i-1]` is in `LOCATION_PREPOSITIONS = {'on', 'at', 'near'}` and a canonical street n-gram starts at index `i`. Locks only the street n-gram, not the preposition. Longest-match-wins on the n-gram (so `films near south van ness` locks the 3-gram rather than the 2-gram `van ness` starting one token later).
+
+Both triggers run sequentially; suffix trigger first. A query like `films on larkin street` hits the suffix trigger and locks `[larkin, street]`; the preposition trigger then walks past the protected span without re-firing.
+
+`LOCATION_PREPOSITIONS` deliberately excludes `in` (collides with neighborhoods, districts, broader areas — Phase E territory) and `around` (weak Locations cue, deferable to v1.1 if needed).
+
+**4. No substitution — span-lock only.**
+
+Per reviewer guidance: bare-token street queries should NOT canonicalize to suffix form (`larkin → larkin st`). The Locations data is free-text with many bare-token Larkin references (`California at Larkin`, `Beach and Larkin`, `Larkin between Beach and Bay`). Predicate-level `Locations contains "larkin"` matches more rows than `Locations contains "larkin st"` would. Trigger (b) protects the span without rewriting.
+
+Trigger (a) still applies suffix canonicalization at the trailing `normalize_street_suffixes` call, since that's a separate pass.
+
+**5. Lock log enriched.**
+
+Added fields to span_lock entries: `rule` (`'suffix'` or `'preposition'`), `street_source` (`'canonical_sf_streets'`), `matched_street` (the canonical n-gram), and `preposition` (only for trigger b). Preserves existing `source: 'span_lock'` tag.
+
+### Implementation
+
+- New constant `LOCATION_PREPOSITIONS`.
+- New constant `CANONICAL_STREETS_PATH`.
+- `_build_street_token_index` deleted; replaced by `_build_street_name_index` (canonical-list loader).
+- `_STREET_TOKEN_PATTERN` regex deleted (dead code).
+- `street_context_prepass` rewritten with two triggers and `_match_street_ngram` helper.
+- `normalize_query` updated to pass `street_name_index` (renamed from `street_token_index`).
+
+### Index sizes against new gpkg
+
+```
+Phrase index: {2: 140, 3: 352, 4: 254}
+Street name index: {1: 2052, 2: 392, 3: 74, 4: 25}  total: 2543
+```
+
+### Validation results
+
+23-query normalizer test set covering:
+
+- Preposition trigger on single-token streets (larkin, market, polk, sutter, treat, 19th)
+- Preposition trigger on multi-token streets (van ness, south van ness, cesar chavez)
+- Preposition variants (`on`, `at`, `near`)
+- Person-cue rejection (`films starring polk`, `films featuring larkin`, `films starring market`)
+- F-1a regression (`films starring alan arkin`)
+- N-1 suffix-trigger regression (`films on larkin street`)
+- Mixed cases (`films on van ness avenue` → falls into phrase pre-pass via `Van Ness Ave` Locations entry)
+- Phrase pre-pass regression (coit tower, golden gate bridge, union square, port of san francisco, the castro)
+
+All 23 produce expected behavior. Notable observation: `films at the castro` resolves via phrase pre-pass exact-match against `'The Castro'` Locations entry, not via the preposition trigger (the `the` between `at` and `castro` defeats trigger b's adjacency requirement). Correct outcome via a different mechanism.
+
+### e2e validation
+
+T15 (`films on larkin street`): 12 films returned. Matches pre-swap baseline.
+T18 (`films on larkin street and how many are there`): 12 films + count. Matches pre-swap baseline.
+
+### Diagnostic finding (filed as D-1)
+
+A one-time diagnostic comparing the deprecated derived vocabulary against the canonical list surfaced 11+ misspellings in Locations free-text: `larken`, `barlett`, `buchannan`, `chestnust`, `misison`, `shotweel`, `sporfford`, `tayor`, `mccollough`, `jenning`, `kearney`. These produce data-coverage holes (predicate substring-match cannot find correctly-spelled queries against misspelled rows) but are independent of normalizer behavior. Filed as **D-1: Locations dataset typo repair**.
+
+### Severity
+
+Real fix. Bare-token street queries with location prepositions now route correctly to predicate-level Locations matching. Multi-word street support is structural (any future canonical-list addition is automatically covered). Vocabulary is no longer dataset-shape-dependent.
+
+### Files changed
+
+- `pipeline_e2e_may_2026_normalization_upgrades.ipynb`:
+  - Pre-pass cell (post-`fuzzy_match_cluster`): full body replacement.
+  - `normalize_query` cell: variable rename `street_token_index` → `street_name_index`.
+
+---
+
+## May 7, 2026 — F-1a revised: raw-ratio scoring with exact-match priority
+
+Replaces the normalized-ratio scoring in F-1a (May 6) with raw-ratio + exact-match priority + column-tiebreaker. Same architectural goal (best-match selection across columns), more conservative scoring math.
+
+### Origin
+
+F-1a (May 6) introduced best-match selection in `fuzzy_match_cluster` to fix the catastrophic `films starring alan arkin → Beach and Larkin` regression discovered during N-1 Layer 3 testing. Initial implementation used normalized ratio:
+
+```python
+normalized = (raw - cutoff) / (1.0 - cutoff)
+```
+
+This made matches across columns directly comparable despite different cutoffs (Locations 0.65, person columns 0.75, Title 0.80). Resolved Alan Arkin because raw 1.0 wins under any scoring.
+
+### Why revised
+
+Reviewer flagged a real failure mode: normalized scoring can let a lower raw similarity in Locations beat a higher raw similarity in Actor.
+
+Worked example:
+- Actor raw 0.80 → normalized `(0.80 - 0.75) / 0.25` = 0.20
+- Locations raw 0.78 → normalized `(0.78 - 0.65) / 0.35` = 0.371
+- Under normalization, Locations wins. Under raw ratio, Actor wins.
+
+Locations would systematically win boundary cases purely because its lower cutoff floor compresses its normalized range. That's the opposite bias from what's wanted (Locations is the column most likely to over-admit candidates due to its long free-text values).
+
+### Design
+
+New scoring rule, in priority order:
+
+1. **Exact match wins.** `raw >= 0.999` is treated as exact and beats any non-exact match regardless of column.
+2. **Highest raw ratio wins** among non-exact matches above each column's cutoff.
+3. **Column priority breaks ties.** Order: Actor (0), Director (1), Writer (2), Title (3), Locations (4). Lower index wins. Locations last because its loose cutoff makes it most likely to over-admit.
+
+Implementation uses tuple comparison `(is_exact, raw, -col_pri)` so larger tuple under `>` wins.
+
+### Trade-off accepted
+
+Raw-ratio comparison gives a slight structural advantage to columns with lower cutoffs (more candidates qualify in the first place). This is weaker than normalized-ratio's compounding bias and is mitigated by column priority breaking ratio ties in Actor's favor when multiple columns score legitimately.
+
+### Validation
+
+`films starring alan arkin` test case:
+- Actor: `alan arkin` exact match → raw 1.0 → `is_exact=True`, score `(True, 1.0, -0)`.
+- Locations: `alan arkin` ≈ `Beach and Larkin` → raw ~0.67 → `is_exact=False`, score `(False, 0.67, -4)`.
+- Best: Actor. Returns `('Alan Arkin', 'Actor', 'alan arkin')`. ✓
+
+23-query test set produces no regressions vs the original F-1a result on Alan Arkin or any other query.
+
+### Severity
+
+Same as F-1a (catastrophic regression unblocker), with safer math. The scoring now degrades gracefully in boundary cases rather than systematically favoring the loosest-cutoff column.
+
+### Files changed
+
+- `pipeline_e2e_may_2026_normalization_upgrades.ipynb`:
+  - `fuzzy_match_cluster` cell: scoring logic replacement (function shape unchanged).
+
+### Open follow-up
+
+A 20–30 case audit of cross-column scoring decisions was suggested by the reviewer to validate the new rule against a broader set of queries. Deferred to F-1b design work, where it can be combined with cue-gating evaluation.
+
+
+
 
 ---
 ## May 6, 2026 — N-1: Phrase pre-pass + street-context pre-pass for Locations

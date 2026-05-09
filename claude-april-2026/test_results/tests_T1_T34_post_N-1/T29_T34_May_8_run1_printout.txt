@@ -1,0 +1,552 @@
+
+############################################################
+  TEST 1/6: T29: Retrieve -> count (film basis)
+  Query: films shot at golden gate bridge and how many are there
+  Expected: two tasks; t1 retrieve with Locations contains golden gate bridge; t2 count dependsOn t1 with null predicate; scalar count_basis should default to films
+############################################################
+
+============================================================
+Query: films shot at golden gate bridge and how many are there
+============================================================
+
+[Step 1] Normalized: films filmed at golden gate bridge and how many are there
+  Corrections: [{'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230147_step3_films_filmed_at_golden_gate_bridge_and_how_many_are_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many are there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230200_step4_films_shot_at_golden_gate_brid.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "golden gate bridge",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many are there",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=scalar, offer_map=False
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 618 chars
+  Prompt size: 58848 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230229_step6_films_shot_at_golden_gate_brid.json
+  ✓ Code generated: 1937 chars
+  Explanation: The code executes two tasks: first, it filters the GeoDataFrame for rows where the 'Locations' column contains 'golden gate bridge'. Second, it uses t...
+
+[Execution] ✓ Success
+  Summary: Found 27 filming locations at the Golden Gate Bridge.
+  Data keys: ['count', 'count_basis']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 2/6: T30: Retrieve -> count (location basis)
+  Query: show filming locations for the oa part ii and how many locations are there
+  Expected: two tasks; t1 retrieve with Title contains the oa part ii and location granularity; t2 count dependsOn t1 with null predicate; scalar count_basis should be locations
+############################################################
+
+============================================================
+Query: show filming locations for the oa part ii and how many locations are there
+============================================================
+
+[Step 1] Normalized: show filming locations for the oa part ii and how many locations are there
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230247_step3_show_filming_locations_for_the_oa_part_ii_and_how_many_locations_are_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for the oa part ii",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many locations are there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230312_step4_show_filming_locations_for_the.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for the oa part ii",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Title",
+        "op": "==",
+        "value": "the oa part ii",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many locations are there",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=scalar, offer_map=False
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 616 chars
+  Prompt size: 58846 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230349_step6_show_filming_locations_for_the.json
+  ✓ Code generated: 2303 chars
+  Explanation: The code executes two tasks: first, it filters the GeoDataFrame for rows matching 'The OA Part II' using a guarded string match on the Title column. S...
+
+[Execution] ✓ Success
+  Summary: Found 23 filming locations for The OA Part II.
+  Data keys: ['locations', 'location_count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 3/6: T31: Retrieve -> dependent narrow with added predicate
+  Query: films shot at golden gate bridge and which of those were directed by nicholas meyer
+  Expected: two tasks; t1 retrieve with Locations contains golden gate bridge; t2 retrieve dependsOn t1 with new predicate Director == nicholas meyer only
+############################################################
+
+============================================================
+Query: films shot at golden gate bridge and which of those were directed by nicholas meyer
+============================================================
+
+[Step 1] Normalized: films filmed at golden gate bridge and which of those were directed by nicholas meyer
+  Corrections: [{'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \band which\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230407_step3_films_filmed_at_golden_gate_bridge_and_which_of_those_were_directed_by_nicholas_meyer.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "retrieve",
+      "source": "directed by nicholas meyer",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230436_step4_films_shot_at_golden_gate_brid.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "golden gate bridge",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "retrieve",
+      "source": "directed by nicholas meyer",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": {
+        "field": "Director",
+        "op": "==",
+        "value": "nicholas meyer",
+        "type": "attribute"
+      }
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 743 chars
+  Prompt size: 58973 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230513_step6_films_shot_at_golden_gate_brid.json
+  ✓ Code generated: 2452 chars
+  Explanation: The code executes two sequential tasks. First, it filters the GeoDataFrame for locations containing 'golden gate bridge'. Second, it takes those resul...
+
+[Execution] ✓ Success
+  Summary: Found 2 films directed by nicholas meyer filmed at golden gate bridge.
+  Data: [{'Title': 'Star Trek VI: The Undiscovered Country', 'Year': 1991, 'Locations': 'Golden Gate Bridge', 'Fun_Facts': "With 23 miles of ladders and 300,000 rivets in each tower, the Golden Gate Bridge wa
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 4/6: T32: Retrieve -> rank within dependency subset
+  Query: films shot at golden gate bridge and which directors appear most often there
+  Expected: two tasks; t1 retrieve with Locations contains golden gate bridge; t2 rank dependsOn t1 with null predicate; ranking dimension is Director, not a filter
+############################################################
+
+============================================================
+Query: films shot at golden gate bridge and which directors appear most often there
+============================================================
+
+[Step 1] Normalized: films filmed at golden gate bridge and which directors appear most often there
+  Corrections: [{'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \band which\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230521_step3_films_filmed_at_golden_gate_bridge_and_which_directors_appear_most_often_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "rank",
+      "source": "which directors appear most often there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230545_step4_films_shot_at_golden_gate_brid.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "golden gate bridge",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "rank",
+      "source": "which directors appear most often there",
+      "dependsOn": [
+        "t1"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=film, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 635 chars
+  Prompt size: 58865 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230615_step6_films_shot_at_golden_gate_brid.json
+  ✓ Code generated: 2579 chars
+  Explanation: The code first filters the GeoDataFrame for locations containing 'golden gate bridge'. It then uses the resulting matched rows to identify the most fr...
+
+[Execution] ✓ Success
+  Summary: Found 27 locations at the Golden Gate Bridge. The top directors appearing there are: Nicholas Meyer, Robert Stevenson, Richard Donner.
+  Data keys: ['locations', 'top_directors']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 5/6: T33: Retrieve -> retrieve -> compare
+  Query: films shot at golden gate bridge and films shot at port of san francisco and compare them
+  Expected: three tasks; t1 retrieve with Locations contains golden gate bridge; t2 retrieve with Locations contains port of san francisco; t3 compare dependsOn [t1, t2] with null predicate
+############################################################
+
+============================================================
+Query: films shot at golden gate bridge and films shot at port of san francisco and compare them
+============================================================
+
+[Step 1] Normalized: films filmed at golden gate bridge and films filmed at port of san francisco and compare them
+  Corrections: [{'matched': 'Port of San Francisco', 'column': 'Locations', 'source': 'phrase_prepass_exact'}, {'matched': 'Golden Gate Bridge', 'column': 'Locations', 'source': 'phrase_prepass_exact'}]
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bcompare\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230624_step3_films_filmed_at_golden_gate_bridge_and_films_filmed_at_port_of_san_francisco_and_compare_them.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "retrieve",
+      "source": "films filmed at port of san francisco",
+      "dependsOn": []
+    },
+    {
+      "id": "t3",
+      "kind": "compare",
+      "source": "compare them",
+      "dependsOn": [
+        "t1",
+        "t2"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230649_step4_films_shot_at_golden_gate_brid.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "films filmed at golden gate bridge",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "golden gate bridge",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "retrieve",
+      "source": "films filmed at port of san francisco",
+      "dependsOn": [],
+      "predicate": {
+        "field": "Locations",
+        "op": "contains",
+        "value": "port of san francisco",
+        "type": "attribute"
+      }
+    },
+    {
+      "id": "t3",
+      "kind": "compare",
+      "source": "compare them",
+      "dependsOn": [
+        "t1",
+        "t2"
+      ],
+      "predicate": null
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=location, offer_map=True
+  t3: granularity=location, offer_map=True
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 988 chars
+  Prompt size: 59218 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230727_step6_films_shot_at_golden_gate_brid.json
+  ✓ Code generated: 2726 chars
+  Explanation: The code executes three tasks: two retrieval tasks for the specific locations using string matching, and a comparison task that calculates film counts...
+
+[Execution] ✓ Success
+  Summary: Compared 27 films at Golden Gate Bridge and 1 films at Port of San Francisco.
+  Data keys: ['golden_gate_bridge_film_count', 'port_of_sf_film_count', 'common_films']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+  ⏳ Waiting 2s before next test...
+
+############################################################
+  TEST 6/6: T34: Retrieve -> count with potentially competing film/location cues
+  Query: show filming locations for time after time and how many films are represented there
+  Expected: two tasks; t1 retrieve with Title contains time after time and location granularity; t2 count dependsOn t1 with null predicate; primary diagnostic: whether count_basis is decided from t2 source text alone or inherited from t1's location-oriented framing; expected-preferred outcome is films, but locations would be an informative semantic finding rather than a pure regression
+############################################################
+
+============================================================
+Query: show filming locations for time after time and how many films are represented there
+============================================================
+
+[Step 1] Normalized: show filming locations for time after time and how many films are represented there
+[Step 2] Safe ✓
+
+[Step 3] Decomposing...
+  [decomposer] matched pattern: \bhow many\b
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230731_step3_show_filming_locations_for_time_after_time_and_how_many_films_are_represented_there.json
+  Tasks: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for time after time",
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many films are represented there",
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 4] Extracting filters...
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230745_step4_show_filming_locations_for_tim.json
+  Filters: {
+  "tasks": [
+    {
+      "id": "t1",
+      "kind": "retrieve",
+      "source": "filming locations for time after time",
+      "predicate": {
+        "field": "Title",
+        "op": "==",
+        "value": "time after time",
+        "type": "attribute"
+      },
+      "dependsOn": []
+    },
+    {
+      "id": "t2",
+      "kind": "count",
+      "source": "how many films are represented there",
+      "predicate": null,
+      "dependsOn": [
+        "t1"
+      ]
+    }
+  ]
+}
+
+[Step 5] Presentation resolved:
+  t1: granularity=location, offer_map=True
+  t2: granularity=scalar, offer_map=False
+  Top-level offer_map: True
+
+[Step 6] Generating code...
+  IR size: 626 chars
+  Prompt size: 58856 chars
+Successfully saved to /content/drive/MyDrive/Colab Notebooks/SF Film Project/calude-refactoring/e2e-testing/raw_responses/20260508_230820_step6_show_filming_locations_for_tim.json
+  ✓ Code generated: 2418 chars
+  Explanation: The code first filters the GeoDataFrame for rows where the 'Title' matches 'time after time' using a guarded string match. It then stores these matche...
+
+[Execution] ✓ Success
+  Summary: Found 24 filming locations for 'time after time', representing 1 film.
+  Data keys: ['locations', 'film_count']
+
+============================================================
+Pipeline ✓ SUCCESS
+============================================================
+
+
+============================================================
+TEST SUITE SUMMARY
+============================================================
+  Passed: 6/6
+  Failed: 0/6
+
+  ✓ T29: Retrieve -> count (film basis)
+  ✓ T30: Retrieve -> count (location basis)
+  ✓ T31: Retrieve -> dependent narrow with added predicate
+  ✓ T32: Retrieve -> rank within dependency subset
+  ✓ T33: Retrieve -> retrieve -> compare
+  ✓ T34: Retrieve -> count with potentially competing film/location cues

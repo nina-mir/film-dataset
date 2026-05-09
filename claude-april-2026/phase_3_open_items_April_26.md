@@ -7,7 +7,7 @@
 
 ## Normalizer — areas that could benefit from further work
 
-### N-1: Phrase pre-pass for known multi-word locations
+### N-1: Phrase pre-pass for known multi-word locations [IMPLEMENTED]
 
 **Observation:** During the Phase 3 normalizer fixes, three separate bugs all traced to the same root cause: the cluster extractor has no awareness of multi-word locations as semantic units. Adding `bridge` to `DOMAIN_WORDS` split `golden gate bridge` into `[golden gate]` cluster + `bridge` skip, exposing the smaller cluster to a false match. Removing `san francisco` from city stripping left `san francisco` as a cluster that matched `San Francisco Bay`. The `is_unjustified_expansion` guard now closes both at the matching layer, but the underlying architectural issue remains: clusters are extracted *first*, then matched, with no opportunity for multi-word phrases to be recognized as units before clustering.
 
