@@ -131,6 +131,139 @@ Do not run e2e tests until all four targeted-test failures from May 8 are clean.
 
 
 
+
+
+## Recently shipped
+
+### Today (May 8)
+
+- ✅ **C-1a.1** (cross-street continuation locks): handles `<locked> and <street>`, `<locked> & <street>`, `<locked> between <street> and <street>`. Verified against 6 cross-street query shapes including 3-way chains.
+- ✅ **DOMAIN_WORDS expansion**: added `television`, `tv`, `show`, `shows`, `series`, `episode`, `episodes`. Prevents media vocabulary from entering cluster extraction. Kills `films and television shows → films and barry levinson shows`.
+- ✅ **`from <street> to <street>` standalone range trigger**: handles `films from larkin to polk` without making `from` a general Locations preposition (preserves year-range queries like `films from 1985`).
+
+### Earlier this week
+
+- ✅ N-1: phrase pre-pass + street-context pre-pass (suffix-anchored). May 6.
+- ✅ F-1a: best-match selection in `fuzzy_match_cluster`, raw-ratio with exact-priority. May 6 (initial) + May 7 (revised scoring).
+- ✅ C-1a: canonical SF streets vocabulary + preposition trigger. May 7.
+
+T1–T34 all passed against the new gpkg (May 8 morning run). T15 and T18 now return correct counts (12 films) matching the post-swap baseline.
+
+---
+
+## Open items — queued for tomorrow (May 9)
+
+### F-1b v1 — Hard column gating for strong cues
+**Priority: high. Blocks declaring normalizer stable.**
+
+Targeted normalizer testing (May 8) revealed that `fuzzy_match_cluster` still allows wrong-column matches under strong cues. Examples:
+
+```
+films directed by smith and jones
+→ films directed by alexis smith and dean jones    (Actor, but cue says Director)
+
+films starring tom and jerry
+→ films starring tom and ken berry                 (partial-name path matches Berry surname)
+```
+
+`F-1a`'s best-match selection only resolves cross-column conflicts when one column has an exact match. When no column has an exact match, the matcher's column-priority tiebreaker fires, but it doesn't respect query intent. A user typing `directed by smith and jones` who gets actors back is getting the wrong column entirely.
+
+**Spec for v1 (narrow scope):**
+
+Hard column gating for four cue patterns:
+- `directed by <cluster>` → `allowed_columns = ['Director']`
+- `written by <cluster>` → `allowed_columns = ['Writer']`
+- `starring <cluster>` → `allowed_columns = ['Actor']`
+- `featuring <cluster>` → `allowed_columns = ['Actor']`
+
+Implementation: `fuzzy_match_cluster` accepts `allowed_columns` parameter. Default (None) preserves all-column behavior. Cue inference happens in `normalize_query` before each cluster is matched: walk left from cluster start, check the previous N tokens against cue vocabulary.
+
+**Deliberately deferred from v1:**
+- `with` cue (ambiguous: `films with brad pitt` vs `films with great cinematography` vs `films with no listed director`).
+- `on / at / near` Locations cues (already handled by C-1a's preposition trigger; redundant gating could conflict with phrase pre-pass for landmarks like `at coit tower`).
+- Per-cluster cue inference for queries with multiple distinct intents (e.g. `films starring alan arkin filmed at coit tower`). v1 supports this naturally if cue detection is local to each cluster.
+
+**Estimated work:** half day. Includes design note (~1 page), implementation, unit tests for the four cues, regression sweep against targeted tests.
+
+**Open design questions to resolve in the design note:**
+- Conflict handling when a cluster has cues on both sides.
+- Fallback when a gated column has no candidates at all (return None vs. fall back to all columns).
+- STOP_WORDS interaction (cue tokens like `by` and `with` may overlap with stop words; cue detection has to operate on the original word list, not the filtered one).
+
+### Partial-name path tightening (revised N-2)
+**Priority: medium. Better designed before threshold-tweaking.**
+
+Bare single-word clusters that aren't covered by C-1a's preposition trigger or F-1b's column gating still hit the partial-name path in `fuzzy_match_cluster` and produce questionable corrections:
+
+```
+films from larkin to polk      (NOW FIXED via from-to trigger)
+films starring tom and jerry    (jerry → Ken Berry — F-1b doesn't kill this since gating
+                                 to Actor still runs partial-name search within Actor)
+films featuring larkin           (larkin → Alan Arkin if cluster reaches matcher)
+```
+
+**The threshold-only fix is insufficient.** Pure ratio thresholds can't separate good cases from bad: `hithcok → hitchcock` (0.875) and `broadway → roday` (0.769) are 0.10 apart, so any cliff between them risks losing legitimate typo corrections. Length floors help but don't solve it (`larkin` at 6 chars, ratio 0.91 against `arkin`, passes any reasonable len + ratio rule).
+
+**Structural alternatives worth designing:**
+- Require near-prefix or near-suffix alignment (use `SequenceMatcher.get_matching_blocks` to check whether the longest match starts at position 0 of the shorter string or extends to the end).
+- Require absolute character overlap above a floor, not just ratio.
+- Combine: require either an exact last-name match OR (alignment AND ratio AND length).
+
+**Estimated work:** one day for design + implementation + validation against the 73-test internal suite (which contains the legitimate typo cases this change must not regress).
+
+**Why deferred behind F-1b:** F-1b reduces how often the partial-name path runs in practice (gating to specific person columns when cues exist). Knowing how much problem remains after F-1b lands would calibrate this work.
+
+### N-3 — 73-test internal normalizer suite re-run
+**Priority: medium. Due before declaring normalizer stable.**
+
+Re-run the 73-test internal suite against the post-N-1/F-1a/C-1a/C-1a.1/F-1b normalizer. Confirms no legitimate corrections regressed and calibrates the partial-name path tightening. Should run after F-1b lands and before partial-name tightening, then again after tightening.
+
+---
+
+## Open items — lower priority
+
+### D-1 — Locations dataset typo repair
+**Priority: medium. Not a normalizer fix.**
+
+Diagnostic from May 7 surfaced 11+ misspellings in Locations free-text: `larken`, `barlett`, `buchannan`, `chestnust`, `misison`, `shotweel`, `sporfford`, `tayor`, `mccollough`, `jenning`, `kearney`. Predicate substring-match coverage holes that no normalizer change can fix.
+
+### F-2 — Locations cutoff calibration
+**Priority: low.**
+
+`FUZZY_CUTOFFS['Locations'] = 0.65` is uniquely loose. With F-1a's best-match selection, no longer catastrophic, but still produces low-quality fuzzy hits when no other column qualifies. Worth a calibration pass against the 73-test internal suite once F-1b ships.
+
+### C-1b — Additional cross-street and location patterns
+**Priority: low.**
+
+Patterns not yet covered by C-1a / C-1a.1:
+- `films at the corner of <street> and <street>` (no preposition before either street)
+- `films at the <street>` (article between preposition and street defeats trigger b's adjacency requirement)
+- `films <verb-ing> <street>` (no preposition, not a cue, e.g. `films featuring market`)
+- Bidirectional cross-street: `<street> and <locked>` where the locked anchor appears second
+
+None are blocking. Easy wins to consider first when picked up: article-skip in trigger b (`at the castro`), bidirectional extension in trigger c.
+
+### D-2 — Data-repair workflow
+**Priority: low.**
+
+The May 7 derived-vs-canonical diagnostic is itself a reusable artifact. A documented pattern for using it across columns (Locations now, Neighborhood in Phase E) would prevent ad-hoc repairs from drifting in style.
+
+---
+
+## Suggested order for tomorrow
+
+1. **F-1b v1 design note** (~30 min). Resolves the open design questions before coding.
+2. **F-1b v1 implementation** (~half day). Hard column gating for `directed by`, `written by`, `starring`, `featuring`.
+3. **Re-run targeted normalizer tests** to see what's still broken after F-1b.
+4. **Decide whether partial-name path tightening is still urgent** based on results. If `tom and jerry → tom and ken berry` is the only remaining failure, partial-name tightening becomes the next item. If F-1b leaves more residual issues, scope out further before committing to partial-name work.
+5. **N-3 re-run** after both ship.
+6. **THEN T15/T18, then full T1–T34 re-run** to confirm nothing regressed.
+
+Do not run e2e tests until all four targeted-test failures from May 8 are clean.
+
+
+
+
 # Normalizer Open Items — Status as of May 7, 2026
 
 
